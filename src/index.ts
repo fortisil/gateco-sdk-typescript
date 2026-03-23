@@ -5,7 +5,7 @@
  * ```ts
  * import { GatecoClient } from "@gateco/sdk";
  *
- * const client = new GatecoClient({ baseUrl: "https://api.gateco.dev" });
+ * const client = new GatecoClient({ baseUrl: "https://api.gateco.ai" });
  * await client.login("user@example.com", "secret");
  *
  * const page = await client.connectors.list();
@@ -60,6 +60,7 @@ export {
   SimulatorResource,
   DashboardResource,
   RetroactiveResource,
+  AnswersResource,
 } from "./resources/index.js";
 export type {
   IngestDocumentOptions,
@@ -76,6 +77,7 @@ export type {
   AuditExportFilters,
   RunSimulationOptions,
   RetroactiveRegisterOptions,
+  ExecuteAnswerOptions,
 } from "./resources/index.js";
 
 // Types
@@ -144,4 +146,7 @@ export type {
   DashboardStats,
   RetroactiveRegisterRequest,
   RetroactiveRegisterResponse,
+  Citation,
+  AnswerResponse,
+  ExecuteAnswerRequest,
 } from "./types/index.js";

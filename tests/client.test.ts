@@ -12,8 +12,8 @@ describe("GatecoClient", () => {
   });
 
   it("creates with custom base URL", () => {
-    const client = new GatecoClient({ baseUrl: "https://api.gateco.dev" });
-    expect(client._transport.baseUrl).toBe("https://api.gateco.dev");
+    const client = new GatecoClient({ baseUrl: "https://api.gateco.ai" });
+    expect(client._transport.baseUrl).toBe("https://api.gateco.ai");
     client.close();
   });
 

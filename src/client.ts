@@ -21,6 +21,7 @@ import { AuditResource } from "./resources/audit.js";
 import { SimulatorResource } from "./resources/simulator.js";
 import { DashboardResource } from "./resources/dashboard.js";
 import { RetroactiveResource } from "./resources/retroactive.js";
+import { AnswersResource } from "./resources/answers.js";
 
 /** Options for creating a GatecoClient instance. */
 export interface GatecoClientOptions {
@@ -48,7 +49,7 @@ export interface InternalRequestOptions {
  *
  * @example
  * ```ts
- * const client = new GatecoClient({ baseUrl: "https://api.gateco.dev" });
+ * const client = new GatecoClient({ baseUrl: "https://api.gateco.ai" });
  * await client.login("user@example.com", "secret");
  * const page = await client.connectors.list();
  * console.log(page.items);
@@ -75,6 +76,7 @@ export class GatecoClient {
   private _simulator: SimulatorResource | undefined;
   private _dashboard: DashboardResource | undefined;
   private _retroactive: RetroactiveResource | undefined;
+  private _answers: AnswersResource | undefined;
 
   constructor(options: GatecoClientOptions = {}) {
     this._transport = new Transport(options.baseUrl ?? "http://localhost:8000", {
@@ -199,6 +201,14 @@ export class GatecoClient {
       this._retroactive = new RetroactiveResource(this);
     }
     return this._retroactive;
+  }
+
+  /** Grounded answer synthesis from allowed retrieval chunks. */
+  get answers(): AnswersResource {
+    if (this._answers === undefined) {
+      this._answers = new AnswersResource(this);
+    }
+    return this._answers;
   }
 
   // ------------------------------------------------------------------
