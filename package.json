@@ -21,6 +21,8 @@
     "vitest": "^1.6.0",
     "msw": "^2.3.0"
   },
+  "author": "Rami Refaeli <rami@gateco.ai>",
+  "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
