@@ -41,6 +41,36 @@ export interface ExecuteRetrievalRequest {
   include_unresolved?: boolean;
 }
 
+/** Typed inline metadata for policy evaluation (filter endpoint). */
+export interface CandidatePolicyMetadata {
+  classification?: string;
+  sensitivity?: string;
+  domain?: string;
+  labels?: string[];
+  encryption_mode?: string;
+}
+
+/** A candidate passed to the filter endpoint. */
+export interface FilterCandidate {
+  vector_id: string;
+  score?: number | null;
+  text?: string | null;
+  resource_id?: string;
+  metadata?: CandidatePolicyMetadata;
+}
+
+/** A single result from the filter endpoint. */
+export interface FilterResult {
+  vector_id: string;
+  score?: number | null;
+  text?: string | null;
+  resource_id?: string | null;
+  resource_mode: "registered" | "synthetic" | "unresolved";
+  granted: boolean;
+  policy_decision: "allowed" | "denied";
+  denial_reason?: string | null;
+}
+
 /** Full retrieval record returned by list / get / execute endpoints. */
 export interface SecuredRetrieval {
   id: string;
@@ -56,12 +86,36 @@ export interface SecuredRetrieval {
   created_at?: string;
   duration_ms?: number;
   metadata: Record<string, unknown>;
+  /** Filter-specific fields (present when mode is "filter"). */
+  mode?: string;
+  outcome?: string;
+  matched_chunks?: number;
+  allowed_chunks?: number;
+  denied_chunks?: number;
+  results?: FilterResult[];
+  denial_reasons?: string[];
+  policy_trace?: PolicyTrace[];
+  latency_ms?: number;
+}
+
+/** Parse a raw JSON object into a FilterResult. */
+export function parseFilterResult(data: Record<string, unknown>): FilterResult {
+  return {
+    vector_id: data["vector_id"] as string,
+    score: data["score"] as number | null | undefined,
+    text: data["text"] as string | null | undefined,
+    resource_id: data["resource_id"] as string | null | undefined,
+    resource_mode: data["resource_mode"] as "registered" | "synthetic" | "unresolved",
+    granted: (data["granted"] as boolean) ?? false,
+    policy_decision: data["policy_decision"] as "allowed" | "denied",
+    denial_reason: data["denial_reason"] as string | null | undefined,
+  };
 }
 
 /** Parse a raw JSON object into a SecuredRetrieval. */
 export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRetrieval {
   return {
-    id: data["id"] as string,
+    id: (data["id"] ?? data["retrieval_id"]) as string,
     query: data["query"] as string | undefined,
     principal_id: data["principal_id"] as string | undefined,
     connector_id: data["connector_id"] as string | undefined,
@@ -76,6 +130,19 @@ export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRet
     created_at: data["created_at"] as string | undefined,
     duration_ms: data["duration_ms"] as number | undefined,
     metadata: (data["metadata"] as Record<string, unknown>) ?? {},
+    mode: data["mode"] as string | undefined,
+    outcome: data["outcome"] as string | undefined,
+    matched_chunks: data["matched_chunks"] as number | undefined,
+    allowed_chunks: data["allowed_chunks"] as number | undefined,
+    denied_chunks: data["denied_chunks"] as number | undefined,
+    results: Array.isArray(data["results"])
+      ? (data["results"] as Record<string, unknown>[]).map(parseFilterResult)
+      : undefined,
+    denial_reasons: data["denial_reasons"] as string[] | undefined,
+    policy_trace: Array.isArray(data["policy_trace"])
+      ? (data["policy_trace"] as Record<string, unknown>[]).map(parsePolicyTrace)
+      : undefined,
+    latency_ms: data["latency_ms"] as number | undefined,
   };
 }
 

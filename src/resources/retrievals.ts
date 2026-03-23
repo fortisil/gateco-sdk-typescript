@@ -5,7 +5,7 @@
 import type { GatecoClient } from "../client.js";
 import type { Page } from "../pagination.js";
 import { parsePage, listAll } from "../pagination.js";
-import type { SecuredRetrieval } from "../types/retrievals.js";
+import type { SecuredRetrieval, FilterCandidate } from "../types/retrievals.js";
 import { parseSecuredRetrieval } from "../types/retrievals.js";
 
 /** Options for executing a permission-gated retrieval. */
@@ -24,6 +24,18 @@ export interface ExecuteRetrievalOptions {
   filters?: Record<string, unknown>;
   /** Whether to include unresolved results. */
   includeUnresolved?: boolean;
+}
+
+/** Options for applying policy filtering to external retrieval candidates. */
+export interface FilterRetrievalOptions {
+  /** Identity of the requesting principal. */
+  principalId: string;
+  /** Connector to evaluate policies against. */
+  connectorId: string;
+  /** Candidate results from an external retrieval source. */
+  candidates: FilterCandidate[];
+  /** Whether to include full policy evaluation trace. */
+  includeTrace?: boolean;
 }
 
 /** Filter options for listing retrievals. */
@@ -89,6 +101,21 @@ export class RetrievalsResource {
   /** Get a single retrieval by ID. */
   async get(retrievalId: string): Promise<SecuredRetrieval> {
     const data = await this.client._request("GET", `/api/retrievals/${retrievalId}`);
+    return parseSecuredRetrieval(data as Record<string, unknown>);
+  }
+
+  /** Apply policy filtering to externally-sourced retrieval candidates. */
+  async filter(options: FilterRetrievalOptions): Promise<SecuredRetrieval> {
+    const body: Record<string, unknown> = {
+      principal_id: options.principalId,
+      connector_id: options.connectorId,
+      candidates: options.candidates,
+    };
+    if (options.includeTrace !== undefined) body["include_trace"] = options.includeTrace;
+
+    const data = await this.client._request("POST", "/api/retrievals/filter", {
+      json: body,
+    });
     return parseSecuredRetrieval(data as Record<string, unknown>);
   }
 }

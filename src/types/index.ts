@@ -42,12 +42,16 @@ export type {
   DenialReason,
   PolicyTrace,
   RetrievalOutcome,
+  CandidatePolicyMetadata,
+  FilterCandidate,
+  FilterResult,
   ExecuteRetrievalRequest,
   SecuredRetrieval,
 } from "./retrievals.js";
 export {
   parseSecuredRetrieval,
   parseRetrievalOutcome,
+  parseFilterResult,
   parseDenialReason,
   parsePolicyTrace,
 } from "./retrievals.js";
@@ -143,3 +147,10 @@ export type {
   RetroactiveRegisterResponse,
 } from "./retroactive.js";
 export { parseRetroactiveRegisterResponse } from "./retroactive.js";
+
+export type {
+  Citation,
+  AnswerResponse,
+  ExecuteAnswerRequest,
+} from "./answers.js";
+export { parseCitation, parseAnswerResponse } from "./answers.js";
