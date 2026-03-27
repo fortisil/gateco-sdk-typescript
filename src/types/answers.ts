@@ -38,6 +38,8 @@ export interface ExecuteAnswerRequest {
   connector_id: string;
   top_k?: number;
   filters?: Record<string, unknown>;
+  search_mode?: "vector" | "keyword" | "hybrid";
+  alpha?: number;
 }
 
 /** Parse a raw JSON object into a Citation. */

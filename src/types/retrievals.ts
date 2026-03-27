@@ -39,6 +39,10 @@ export interface ExecuteRetrievalRequest {
   top_k?: number;
   filters?: Record<string, unknown>;
   include_unresolved?: boolean;
+  search_mode?: "vector" | "keyword" | "hybrid" | "grep";
+  alpha?: number;
+  pattern_type?: "substring" | "regex";
+  case_sensitive?: boolean;
 }
 
 /** Typed inline metadata for policy evaluation (filter endpoint). */
@@ -96,6 +100,12 @@ export interface SecuredRetrieval {
   denial_reasons?: string[];
   policy_trace?: PolicyTrace[];
   latency_ms?: number;
+  search_mode?: string;
+  keyword_latency_ms?: number;
+  vector_latency_ms?: number;
+  pattern_type?: string;
+  match_count?: number;
+  sort_order?: string;
 }
 
 /** Parse a raw JSON object into a FilterResult. */
@@ -143,6 +153,12 @@ export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRet
       ? (data["policy_trace"] as Record<string, unknown>[]).map(parsePolicyTrace)
       : undefined,
     latency_ms: data["latency_ms"] as number | undefined,
+    search_mode: data["search_mode"] as string | undefined,
+    keyword_latency_ms: data["keyword_latency_ms"] as number | undefined,
+    vector_latency_ms: data["vector_latency_ms"] as number | undefined,
+    pattern_type: data["pattern_type"] as string | undefined,
+    match_count: data["match_count"] as number | undefined,
+    sort_order: data["sort_order"] as string | undefined,
   };
 }
 

@@ -24,6 +24,14 @@ export interface ExecuteRetrievalOptions {
   filters?: Record<string, unknown>;
   /** Whether to include unresolved results. */
   includeUnresolved?: boolean;
+  /** Search mode: vector (ANN), keyword (FTS), hybrid (vector+keyword), grep (exact match). */
+  searchMode?: "vector" | "keyword" | "hybrid" | "grep";
+  /** Hybrid weight: 1.0=all-vector, 0.0=all-keyword. Only for hybrid mode. */
+  alpha?: number;
+  /** Grep pattern type. Only for grep mode. */
+  patternType?: "substring" | "regex";
+  /** Case-sensitive grep matching. Only for grep mode. */
+  caseSensitive?: boolean;
 }
 
 /** Options for applying policy filtering to external retrieval candidates. */
@@ -61,6 +69,10 @@ export class RetrievalsResource {
     if (options.topK !== undefined) body["top_k"] = options.topK;
     if (options.filters !== undefined) body["filters"] = options.filters;
     if (options.includeUnresolved !== undefined) body["include_unresolved"] = options.includeUnresolved;
+    if (options.searchMode !== undefined) body["search_mode"] = options.searchMode;
+    if (options.alpha !== undefined) body["alpha"] = options.alpha;
+    if (options.patternType !== undefined) body["pattern_type"] = options.patternType;
+    if (options.caseSensitive !== undefined) body["case_sensitive"] = options.caseSensitive;
 
     const data = await this.client._request("POST", "/api/retrievals/execute", {
       json: body,

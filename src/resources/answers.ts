@@ -18,6 +18,10 @@ export interface ExecuteAnswerOptions {
   topK?: number;
   /** Optional filter dict for scoping results. */
   filters?: Record<string, unknown>;
+  /** Search mode for retrieval: vector, keyword, or hybrid. Grep excluded from answer synthesis. */
+  searchMode?: "vector" | "keyword" | "hybrid";
+  /** Hybrid weight: 1.0=all-vector, 0.0=all-keyword. Only for hybrid mode. */
+  alpha?: number;
 }
 
 /** Namespace for answer synthesis endpoints. Accessed as `client.answers`. */
@@ -33,6 +37,8 @@ export class AnswersResource {
     };
     if (options.topK !== undefined) body["top_k"] = options.topK;
     if (options.filters !== undefined) body["filters"] = options.filters;
+    if (options.searchMode !== undefined) body["search_mode"] = options.searchMode;
+    if (options.alpha !== undefined) body["alpha"] = options.alpha;
 
     const data = await this.client._request("POST", "/api/answers/execute", {
       json: body,

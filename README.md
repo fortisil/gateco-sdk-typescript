@@ -28,7 +28,7 @@ await client.login("user@example.com", "password");
 const page = await client.connectors.list();
 console.log(page.items);
 
-// Execute a permission-gated retrieval
+// Execute a permission-gated retrieval (vector search, default)
 const retrieval = await client.retrievals.execute({
   principalId: "user-123",
   connectorId: "conn-456",
@@ -37,11 +37,41 @@ const retrieval = await client.retrievals.execute({
 });
 console.log(retrieval.outcomes);
 
+// Keyword search (ranked full-text search)
+const keyword = await client.retrievals.execute({
+  principalId: "user-123",
+  connectorId: "conn-456",
+  query: "quarterly revenue",
+  searchMode: "keyword",
+  topK: 10,
+});
+
+// Hybrid search (vector + keyword fused)
+const hybrid = await client.retrievals.execute({
+  principalId: "user-123",
+  connectorId: "conn-456",
+  query: "quarterly revenue",
+  searchMode: "hybrid",
+  alpha: 0.5, // 1.0=all-vector, 0.0=all-keyword
+  topK: 10,
+});
+
+// Grep search (exact pattern matching)
+const grep = await client.retrievals.execute({
+  principalId: "user-123",
+  connectorId: "conn-456",
+  query: "ERR-4021",
+  searchMode: "grep",
+});
+console.log(grep.matchCount, grep.sortOrder); // total matches, "natural"
+
 // Grounded answer synthesis with citations
 const answer = await client.answers.execute({
   query: "What was our Q4 revenue?",
   principalId: "user-123",
   connectorId: "conn-456",
+  searchMode: "hybrid",  // vector, keyword, or hybrid (grep excluded)
+  alpha: 0.5,            // hybrid weight: 1.0=all-vector, 0.0=all-keyword
 });
 console.log(answer.answer);   // Synthesized text or null
 console.log(answer.outcome);  // "answered", "no_access", or "insufficient_context"
