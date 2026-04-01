@@ -16,6 +16,8 @@ export interface Principal {
   identity_provider_id?: string;
   identity_provider_name?: string;
   external_id?: string;
+  /** Provider-native subject identifier (e.g. Okta user ID, Google sub claim). */
+  provider_subject?: string;
   display_name?: string;
   email?: string;
   groups: string[];
@@ -33,6 +35,7 @@ export function parsePrincipal(data: Record<string, unknown>): Principal {
     identity_provider_id: data["identity_provider_id"] as string | undefined,
     identity_provider_name: data["identity_provider_name"] as string | undefined,
     external_id: data["external_id"] as string | undefined,
+    provider_subject: data["provider_subject"] as string | undefined,
     display_name: data["display_name"] as string | undefined,
     email: data["email"] as string | undefined,
     groups: (data["groups"] as string[]) ?? [],

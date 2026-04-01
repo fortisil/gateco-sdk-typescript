@@ -129,10 +129,10 @@ try {
 | `client.connectors` | Connector CRUD, test, bind, config, coverage, classification suggestions |
 | `client.ingest` | Single document and batch ingestion |
 | `client.retrievals` | Execute, filter, list, get secured retrievals |
-| `client.policies` | Policy CRUD, activate, archive |
+| `client.policies` | Policy CRUD, activate, archive, and templates |
 | `client.answers` | Grounded answer synthesis with citations |
 | `client.identityProviders` | Identity provider CRUD and sync |
-| `client.principals` | Principal listing and detail |
+| `client.principals` | Principal listing, detail, and resolve |
 | `client.dataCatalog` | Gated resource listing and metadata updates |
 | `client.pipelines` | Pipeline CRUD and run management |
 | `client.billing` | Plans, usage, invoices, subscription, checkout |
@@ -140,6 +140,26 @@ try {
 | `client.simulator` | Access simulation dry-runs |
 | `client.dashboard` | Dashboard statistics |
 | `client.retroactive` | Retroactive vector registration |
+
+## Principal Resolution
+
+Resolve principals by email or provider subject without knowing their ID:
+
+```typescript
+// Resolve by email
+const principal = await client.principals.resolve({ email: "alice@company.com" });
+
+// Resolve by provider subject (raw IDP-side user ID)
+const principal = await client.principals.resolve({ providerSubject: "okta-user-123" });
+
+// Scoped to a specific identity provider
+const principal = await client.principals.resolve({
+  email: "alice@company.com",
+  identityProviderId: "idp-uuid-here",
+});
+```
+
+Resolution is read-only -- it finds existing active principals but never creates them. Returns `NotFoundError` if no active principal matches.
 
 ## Development
 
