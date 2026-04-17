@@ -12,7 +12,8 @@ export type ConnectorType =
   | "weaviate"
   | "qdrant"
   | "milvus"
-  | "chroma";
+  | "chroma"
+  | "azure_ai_search";
 
 /** Connector lifecycle status. */
 export type ConnectorStatus = "connected" | "error" | "syncing" | "disconnected";
