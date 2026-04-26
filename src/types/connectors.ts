@@ -13,7 +13,8 @@ export type ConnectorType =
   | "qdrant"
   | "milvus"
   | "chroma"
-  | "azure_ai_search";
+  | "azure_ai_search"
+  | "vertex_ai_vector_search";
 
 /** Connector lifecycle status. */
 export type ConnectorStatus = "connected" | "error" | "syncing" | "disconnected";
