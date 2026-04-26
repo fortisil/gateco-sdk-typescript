@@ -14,7 +14,8 @@ export type ConnectorType =
   | "milvus"
   | "chroma"
   | "azure_ai_search"
-  | "vertex_ai_vector_search";
+  | "vertex_ai_vector_search"
+  | "vertex_ai_search";
 
 /** Connector lifecycle status. */
 export type ConnectorStatus = "connected" | "error" | "syncing" | "disconnected";
