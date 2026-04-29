@@ -154,3 +154,13 @@ export type {
   ExecuteAnswerRequest,
 } from "./answers.js";
 export { parseCitation, parseAnswerResponse } from "./answers.js";
+
+export type {
+  OnboardingStep,
+  OnboardingStatus,
+} from "./onboarding.js";
+
+export type {
+  ApiKey,
+  CreateApiKeyResponse,
+} from "./api-keys.js";

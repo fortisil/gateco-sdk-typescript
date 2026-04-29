@@ -30,3 +30,6 @@ export { RetroactiveResource } from "./retroactive.js";
 export type { RetroactiveRegisterOptions } from "./retroactive.js";
 export { AnswersResource } from "./answers.js";
 export type { ExecuteAnswerOptions } from "./answers.js";
+export { OnboardingResource } from "./onboarding.js";
+export { ApiKeysResource } from "./api-keys.js";
+export type { CreateApiKeyParams } from "./api-keys.js";

@@ -22,6 +22,8 @@ import { SimulatorResource } from "./resources/simulator.js";
 import { DashboardResource } from "./resources/dashboard.js";
 import { RetroactiveResource } from "./resources/retroactive.js";
 import { AnswersResource } from "./resources/answers.js";
+import { OnboardingResource } from "./resources/onboarding.js";
+import { ApiKeysResource } from "./resources/api-keys.js";
 
 /** Options for creating a GatecoClient instance. */
 export interface GatecoClientOptions {
@@ -77,6 +79,8 @@ export class GatecoClient {
   private _dashboard: DashboardResource | undefined;
   private _retroactive: RetroactiveResource | undefined;
   private _answers: AnswersResource | undefined;
+  private _onboarding: OnboardingResource | undefined;
+  private _apiKeys: ApiKeysResource | undefined;
 
   constructor(options: GatecoClientOptions = {}) {
     this._transport = new Transport(options.baseUrl ?? "http://localhost:8000", {
@@ -209,6 +213,22 @@ export class GatecoClient {
       this._answers = new AnswersResource(this);
     }
     return this._answers;
+  }
+
+  /** Onboarding wizard status and dismissal. */
+  get onboarding(): OnboardingResource {
+    if (this._onboarding === undefined) {
+      this._onboarding = new OnboardingResource(this);
+    }
+    return this._onboarding;
+  }
+
+  /** API key management (create, list, delete, rotate). */
+  get apiKeys(): ApiKeysResource {
+    if (this._apiKeys === undefined) {
+      this._apiKeys = new ApiKeysResource(this);
+    }
+    return this._apiKeys;
   }
 
   // ------------------------------------------------------------------

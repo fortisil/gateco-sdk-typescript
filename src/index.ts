@@ -61,6 +61,8 @@ export {
   DashboardResource,
   RetroactiveResource,
   AnswersResource,
+  OnboardingResource,
+  ApiKeysResource,
 } from "./resources/index.js";
 export type {
   IngestDocumentOptions,
@@ -78,6 +80,7 @@ export type {
   RunSimulationOptions,
   RetroactiveRegisterOptions,
   ExecuteAnswerOptions,
+  CreateApiKeyParams,
 } from "./resources/index.js";
 
 // Types
@@ -149,4 +152,8 @@ export type {
   Citation,
   AnswerResponse,
   ExecuteAnswerRequest,
+  OnboardingStep,
+  OnboardingStatus,
+  ApiKey,
+  CreateApiKeyResponse,
 } from "./types/index.js";
