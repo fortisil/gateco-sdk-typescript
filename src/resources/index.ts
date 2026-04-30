@@ -33,3 +33,5 @@ export type { ExecuteAnswerOptions } from "./answers.js";
 export { OnboardingResource } from "./onboarding.js";
 export { ApiKeysResource } from "./api-keys.js";
 export type { CreateApiKeyParams } from "./api-keys.js";
+export { RelationshipsResource } from "./relationships.js";
+export type { ListRelationshipsParams } from "./relationships.js";

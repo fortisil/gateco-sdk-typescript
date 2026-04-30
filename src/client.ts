@@ -24,6 +24,7 @@ import { RetroactiveResource } from "./resources/retroactive.js";
 import { AnswersResource } from "./resources/answers.js";
 import { OnboardingResource } from "./resources/onboarding.js";
 import { ApiKeysResource } from "./resources/api-keys.js";
+import { RelationshipsResource } from "./resources/relationships.js";
 
 /** Options for creating a GatecoClient instance. */
 export interface GatecoClientOptions {
@@ -81,6 +82,7 @@ export class GatecoClient {
   private _answers: AnswersResource | undefined;
   private _onboarding: OnboardingResource | undefined;
   private _apiKeys: ApiKeysResource | undefined;
+  private _relationships: RelationshipsResource | undefined;
 
   constructor(options: GatecoClientOptions = {}) {
     this._transport = new Transport(options.baseUrl ?? "http://localhost:8000", {
@@ -229,6 +231,14 @@ export class GatecoClient {
       this._apiKeys = new ApiKeysResource(this);
     }
     return this._apiKeys;
+  }
+
+  /** REBAC relationship management (create, list, delete). */
+  get relationships(): RelationshipsResource {
+    if (this._relationships === undefined) {
+      this._relationships = new RelationshipsResource(this);
+    }
+    return this._relationships;
   }
 
   // ------------------------------------------------------------------

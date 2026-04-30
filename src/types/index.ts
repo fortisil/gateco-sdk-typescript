@@ -164,3 +164,8 @@ export type {
   ApiKey,
   CreateApiKeyResponse,
 } from "./api-keys.js";
+
+export type {
+  Relationship,
+  CreateRelationshipRequest,
+} from "./relationships.js";
