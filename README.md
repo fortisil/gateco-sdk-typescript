@@ -123,9 +123,37 @@ client.close();
 | `client.audit` | Audit log listing and CSV export |
 | `client.simulator` | Access simulation dry-runs (Pro+) |
 | `client.dashboard` | Dashboard statistics |
+| `client.relationships` | REBAC direct-relation CRUD — create, list, delete 1-hop tuples (Pro+) |
 | `client.retroactive` | Retroactive vector registration |
 | `client.onboarding` | Onboarding wizard status and dismissal |
 | `client.apiKeys` | API key create, list, delete, and rotate |
+
+## Relationship-Based Access Control (REBAC)
+
+```typescript
+// Create a direct relation: Alice owns resource R
+const rel = await client.relationships.create({
+  subject_principal_id: "principal-uuid",
+  relation_name: "owner_of",
+  object_resource_id: "resource-uuid",
+});
+
+// List relations for a principal
+const { data: rels } = await client.relationships.list({
+  subject_id: "principal-uuid",
+  relation: "owner_of",
+});
+
+// Delete a relation (policy cache invalidated immediately)
+await client.relationships.delete(rel.id);
+```
+
+Use `relation.<name>` as a policy condition field to gate access on the existence of a tuple:
+
+```typescript
+// Policy rule: allow access when principal has owner_of relation on the resource
+const rule = { field: "relation.owner_of", operator: "eq", value: true };
+```
 
 ## API Keys
 
