@@ -146,6 +146,7 @@ export type {
   AuditExportRequest,
   SimulationRequest,
   SimulationResult,
+  DashboardSparklines,
   DashboardStats,
   RetroactiveRegisterRequest,
   RetroactiveRegisterResponse,

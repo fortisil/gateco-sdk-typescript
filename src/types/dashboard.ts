@@ -2,6 +2,21 @@
  * Types for dashboard endpoints.
  */
 
+/** Time-series data for dashboard KPI sparklines.
+ *
+ * All arrays are zero-filled server-side to exact lengths.
+ * - retrievals_24h: 24 hourly buckets ending at the current hour (UTC).
+ * - denied_24h: 24 hourly buckets aligned to retrievals_24h; denied outcomes only.
+ * - principals_7d: 7 daily buckets ending today; active principals by last_seen.
+ * - coverage_7d: v1 flat line of current coverage value (no snapshot table yet).
+ */
+export interface DashboardSparklines {
+  retrievals_24h: number[];
+  denied_24h: number[];
+  principals_7d: number[];
+  coverage_7d: number[];
+}
+
 /** Aggregated dashboard statistics. */
 export interface DashboardStats {
   retrievals_today: number;
@@ -17,6 +32,7 @@ export interface DashboardStats {
   total_vectors: number;
   overall_coverage_pct?: number;
   connectors_policy_ready: number;
+  sparklines?: DashboardSparklines | null;
 }
 
 /** Parse a raw JSON object into DashboardStats. */
@@ -35,5 +51,6 @@ export function parseDashboardStats(data: Record<string, unknown>): DashboardSta
     total_vectors: (data["total_vectors"] as number) ?? 0,
     overall_coverage_pct: data["overall_coverage_pct"] as number | undefined,
     connectors_policy_ready: (data["connectors_policy_ready"] as number) ?? 0,
+    sparklines: (data["sparklines"] as DashboardSparklines | null | undefined) ?? null,
   };
 }

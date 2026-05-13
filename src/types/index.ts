@@ -139,7 +139,7 @@ export type {
 } from "./simulator.js";
 export { parseSimulationResult } from "./simulator.js";
 
-export type { DashboardStats } from "./dashboard.js";
+export type { DashboardSparklines, DashboardStats } from "./dashboard.js";
 export { parseDashboardStats } from "./dashboard.js";
 
 export type {
