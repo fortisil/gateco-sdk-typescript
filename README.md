@@ -221,6 +221,18 @@ for await (const connector of client.connectors.listAll()) {
 }
 ```
 
+## Rate Limits
+
+Three endpoints enforce per-org-per-minute limits:
+
+| Endpoint | Limit |
+|----------|-------|
+| `POST /api/retrievals/execute` | 60/min |
+| `POST /api/answers/execute` | 20/min |
+| `POST /api/simulator/preview` | 10/min |
+
+Exceeded limits throw `RateLimitError`. The SDK retries automatically with exponential backoff. Limits are org-scoped and reset on process restart (in-memory implementation).
+
 ## Error Handling
 
 ```typescript
