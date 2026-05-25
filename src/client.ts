@@ -5,7 +5,7 @@
 import { TokenManager } from "./auth.js";
 import { AuthenticationError } from "./errors.js";
 import { Transport } from "./transport.js";
-import type { TokenResponse } from "./types/auth.js";
+import type { LoginResponse } from "./types/auth.js";
 import { parseTokenResponse } from "./types/auth.js";
 import { AuthResource } from "./resources/auth.js";
 import { ConnectorsResource } from "./resources/connectors.js";
@@ -25,6 +25,7 @@ import { AnswersResource } from "./resources/answers.js";
 import { OnboardingResource } from "./resources/onboarding.js";
 import { ApiKeysResource } from "./resources/api-keys.js";
 import { RelationshipsResource } from "./resources/relationships.js";
+import { UsersResource } from "./resources/users.js";
 
 /** Options for creating a GatecoClient instance. */
 export interface GatecoClientOptions {
@@ -83,6 +84,7 @@ export class GatecoClient {
   private _onboarding: OnboardingResource | undefined;
   private _apiKeys: ApiKeysResource | undefined;
   private _relationships: RelationshipsResource | undefined;
+  private _users: UsersResource | undefined;
 
   constructor(options: GatecoClientOptions = {}) {
     this._transport = new Transport(options.baseUrl ?? "http://localhost:8000", {
@@ -241,12 +243,20 @@ export class GatecoClient {
     return this._relationships;
   }
 
+  /** Current user profile (GET /me, PATCH /me). */
+  get users(): UsersResource {
+    if (this._users === undefined) {
+      this._users = new UsersResource(this);
+    }
+    return this._users;
+  }
+
   // ------------------------------------------------------------------
   // Convenience auth methods on the client itself
   // ------------------------------------------------------------------
 
   /** Shortcut for `client.auth.login(...)`. */
-  async login(email: string, password: string): Promise<TokenResponse> {
+  async login(email: string, password: string): Promise<LoginResponse> {
     return this.auth.login(email, password);
   }
 
@@ -256,7 +266,7 @@ export class GatecoClient {
     email: string,
     password: string,
     organizationName: string,
-  ): Promise<TokenResponse> {
+  ): Promise<LoginResponse> {
     return this.auth.signup(name, email, password, organizationName);
   }
 

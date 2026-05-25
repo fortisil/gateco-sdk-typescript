@@ -2,8 +2,8 @@
  * Types for identity provider endpoints.
  */
 
-/** Supported identity provider types. */
-export type IdentityProviderType = "okta" | "azure_ad" | "google" | "custom";
+/** Supported identity provider types (matches backend IdentityProviderType enum). */
+export type IdentityProviderType = "okta" | "azure_entra_id" | "aws_iam" | "gcp";
 
 /** Identity provider lifecycle status. */
 export type IdentityProviderStatus = "connected" | "error" | "syncing" | "disconnected";

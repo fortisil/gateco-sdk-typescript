@@ -35,22 +35,50 @@ export interface SignupRequest {
   organization_name: string;
 }
 
-/** Response from login / signup / refresh endpoints. */
+/** Token pair returned from login / signup / refresh. */
 export interface TokenResponse {
-  user?: User;
   access_token: string;
   refresh_token?: string;
   token_type: string;
+  expires_in?: number;
 }
 
-/** Parse a raw JSON object into a TokenResponse. */
+/** Full response from login and signup (backend LoginResponse). */
+export interface LoginResponse {
+  user: User;
+  tokens: TokenResponse;
+}
+
+/**
+ * Parse a raw JSON object into a TokenResponse.
+ * Handles both the flat shape ({access_token, ...}) returned by /refresh
+ * and the nested shape ({user, tokens: {access_token, ...}}) from /login and /signup.
+ */
 export function parseTokenResponse(data: Record<string, unknown>): TokenResponse {
+  // Nested shape: {user, tokens: {...}}
+  if (data["tokens"] && typeof data["tokens"] === "object") {
+    const t = data["tokens"] as Record<string, unknown>;
+    return {
+      access_token: t["access_token"] as string,
+      refresh_token: t["refresh_token"] as string | undefined,
+      token_type: (t["token_type"] as string) ?? "bearer",
+      expires_in: t["expires_in"] as number | undefined,
+    };
+  }
+  // Flat shape: {access_token, refresh_token, ...}
   return {
     access_token: data["access_token"] as string,
     refresh_token: data["refresh_token"] as string | undefined,
     token_type: (data["token_type"] as string) ?? "bearer",
-    user: data["user"] ? parseUser(data["user"] as Record<string, unknown>) : undefined,
+    expires_in: data["expires_in"] as number | undefined,
   };
+}
+
+/** Parse a LoginResponse (login/signup) including the embedded user. */
+export function parseLoginResponse(data: Record<string, unknown>): LoginResponse {
+  const user = parseUser((data["user"] ?? data) as Record<string, unknown>);
+  const tokens = parseTokenResponse(data);
+  return { user, tokens };
 }
 
 /** Parse a raw JSON object into a User. */

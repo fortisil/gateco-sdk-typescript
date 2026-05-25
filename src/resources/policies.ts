@@ -133,4 +133,62 @@ export class PoliciesResource {
     );
     return parsePolicy(data as Record<string, unknown>);
   }
+
+  // ------------------------------------------------------------------
+  // Templates
+  // ------------------------------------------------------------------
+
+  /** List the static catalog of policy templates (all plans). */
+  async listTemplates(): Promise<Record<string, unknown>[]> {
+    const raw = await this.client._request("GET", "/api/policies/templates");
+    const items = (raw as Record<string, unknown>)["data"];
+    return Array.isArray(items) ? (items as Record<string, unknown>[]) : [];
+  }
+
+  /**
+   * Create a draft policy from a template.
+   *
+   * @param templateId  One of: group_rbac, department_access, classification_ceiling,
+   *                    deny_sensitive, label_access, connector_scoped_allow, global_internal_read
+   * @param placeholderValues  Key-value map of placeholder substitutions (e.g. `{group: "engineering"}`)
+   * @param name  Optional override for the policy name
+   */
+  async createFromTemplate(
+    templateId: string,
+    placeholderValues: Record<string, string>,
+    name?: string,
+  ): Promise<Policy> {
+    const body: Record<string, unknown> = {
+      template_id: templateId,
+      placeholder_values: placeholderValues,
+    };
+    if (name !== undefined) body["name"] = name;
+    const data = await this.client._request("POST", "/api/policies/from-template", {
+      json: body,
+    });
+    return parsePolicy(data as Record<string, unknown>);
+  }
+
+  // ------------------------------------------------------------------
+  // Versioning
+  // ------------------------------------------------------------------
+
+  /** List all saved versions of a policy (Pro+ only). */
+  async listVersions(policyId: string): Promise<Record<string, unknown>[]> {
+    const raw = await this.client._request(
+      "GET",
+      `/api/policies/${policyId}/versions`,
+    );
+    const items = (raw as Record<string, unknown>)["data"];
+    return Array.isArray(items) ? (items as Record<string, unknown>[]) : [];
+  }
+
+  /** Restore a policy to a saved version (Pro+ only). */
+  async restoreVersion(policyId: string, version: number): Promise<Policy> {
+    const data = await this.client._request(
+      "POST",
+      `/api/policies/${policyId}/versions/${version}/restore`,
+    );
+    return parsePolicy(data as Record<string, unknown>);
+  }
 }

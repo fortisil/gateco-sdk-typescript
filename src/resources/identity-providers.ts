@@ -107,4 +107,68 @@ export class IdentityProvidersResource {
     );
     return (data as Record<string, unknown>) ?? {};
   }
+
+  // ------------------------------------------------------------------
+  // SCIM token management
+  // ------------------------------------------------------------------
+
+  /**
+   * Generate a SCIM bearer token for an identity provider (Enterprise only).
+   *
+   * The plaintext token is returned exactly once in the response and is never
+   * retrievable again. Store it securely immediately after generation.
+   * Generating a new token automatically revokes any existing token for this IDP.
+   */
+  async generateScimToken(idpId: string): Promise<Record<string, unknown>> {
+    const data = await this.client._request(
+      "POST",
+      `/api/identity-providers/${idpId}/scim-token`,
+    );
+    return (data as Record<string, unknown>) ?? {};
+  }
+
+  /** Revoke the current SCIM token for an identity provider. */
+  async revokeScimToken(idpId: string): Promise<void> {
+    await this.client._request(
+      "DELETE",
+      `/api/identity-providers/${idpId}/scim-token`,
+    );
+  }
+
+  // ------------------------------------------------------------------
+  // Policy suggestions
+  // ------------------------------------------------------------------
+
+  /**
+   * Generate conservative policy suggestions from synced IDP principal data (Pro+ only).
+   *
+   * Analyzes groups and departments in synced principals to suggest RBAC/ABAC starting
+   * policies. Returns suggestions with confidence scores and explanations.
+   */
+  async suggestPolicies(idpId: string): Promise<Record<string, unknown>[]> {
+    const raw = await this.client._request(
+      "POST",
+      `/api/identity-providers/${idpId}/suggest-policies`,
+    );
+    const items = (raw as Record<string, unknown>)["suggestions"];
+    return Array.isArray(items) ? (items as Record<string, unknown>[]) : [];
+  }
+
+  /**
+   * Apply accepted policy suggestions as draft policies (Pro+ only).
+   *
+   * @param suggestionIds  List of suggestion IDs to apply. Only accepted suggestions
+   *                       create policies; rejected IDs are ignored.
+   */
+  async applyPolicySuggestions(
+    idpId: string,
+    suggestionIds: string[],
+  ): Promise<Record<string, unknown>> {
+    const data = await this.client._request(
+      "POST",
+      `/api/identity-providers/${idpId}/apply-policy-suggestions`,
+      { json: { suggestion_ids: suggestionIds } },
+    );
+    return (data as Record<string, unknown>) ?? {};
+  }
 }

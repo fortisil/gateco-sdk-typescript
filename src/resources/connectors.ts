@@ -146,7 +146,7 @@ export class ConnectorsResource {
     const data = await this.client._request(
       "PATCH",
       `/api/connectors/${connectorId}/search-config`,
-      { json: searchConfig },
+      { json: { search_config: searchConfig } },
     );
     return (data as Record<string, unknown>) ?? {};
   }
@@ -168,7 +168,7 @@ export class ConnectorsResource {
     const data = await this.client._request(
       "PATCH",
       `/api/connectors/${connectorId}/ingestion-config`,
-      { json: ingestionConfig },
+      { json: { ingestion_config: ingestionConfig } },
     );
     return (data as Record<string, unknown>) ?? {};
   }

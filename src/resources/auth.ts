@@ -3,8 +3,8 @@
  */
 
 import type { GatecoClient } from "../client.js";
-import type { TokenResponse } from "../types/auth.js";
-import { parseTokenResponse } from "../types/auth.js";
+import type { TokenResponse, LoginResponse } from "../types/auth.js";
+import { parseTokenResponse, parseLoginResponse } from "../types/auth.js";
 import { AuthenticationError } from "../errors.js";
 
 /** Namespace for authentication endpoints. Accessed as `client.auth`. */
@@ -16,17 +16,17 @@ export class AuthResource {
    *
    * Stores the returned tokens in the client for subsequent requests.
    */
-  async login(email: string, password: string): Promise<TokenResponse> {
+  async login(email: string, password: string): Promise<LoginResponse> {
     const data = await this.client._request("POST", "/api/auth/login", {
       json: { email, password },
       authenticate: false,
     });
-    const tokenResp = parseTokenResponse(data as Record<string, unknown>);
+    const loginResp = parseLoginResponse(data as Record<string, unknown>);
     this.client._tokenManager.setTokens(
-      tokenResp.access_token,
-      tokenResp.refresh_token,
+      loginResp.tokens.access_token,
+      loginResp.tokens.refresh_token,
     );
-    return tokenResp;
+    return loginResp;
   }
 
   /**
@@ -39,7 +39,7 @@ export class AuthResource {
     email: string,
     password: string,
     organizationName: string,
-  ): Promise<TokenResponse> {
+  ): Promise<LoginResponse> {
     const data = await this.client._request("POST", "/api/auth/signup", {
       json: {
         name,
@@ -49,12 +49,12 @@ export class AuthResource {
       },
       authenticate: false,
     });
-    const tokenResp = parseTokenResponse(data as Record<string, unknown>);
+    const loginResp = parseLoginResponse(data as Record<string, unknown>);
     this.client._tokenManager.setTokens(
-      tokenResp.access_token,
-      tokenResp.refresh_token,
+      loginResp.tokens.access_token,
+      loginResp.tokens.refresh_token,
     );
-    return tokenResp;
+    return loginResp;
   }
 
   /**
@@ -78,6 +78,25 @@ export class AuthResource {
       tokenResp.refresh_token,
     );
     return tokenResp;
+  }
+
+  /**
+   * Exchange a one-time OAuth authorization code for tokens.
+   *
+   * The frontend receives the `code` query parameter after the OAuth redirect
+   * and passes it here. Stores the returned tokens in the client.
+   */
+  async exchangeOAuthCode(code: string): Promise<LoginResponse> {
+    const data = await this.client._request("POST", "/api/auth/exchange", {
+      json: { code },
+      authenticate: false,
+    });
+    const loginResp = parseLoginResponse(data as Record<string, unknown>);
+    this.client._tokenManager.setTokens(
+      loginResp.tokens.access_token,
+      loginResp.tokens.refresh_token,
+    );
+    return loginResp;
   }
 
   /** Invalidate the current session. */

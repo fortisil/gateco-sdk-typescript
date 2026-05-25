@@ -33,8 +33,8 @@ export class BillingResource {
     const raw = await this.client._request("GET", "/api/plans", {
       authenticate: false,
     });
-    const plansRaw = (raw && Array.isArray((raw as Record<string, unknown>)["plans"])
-      ? (raw as Record<string, unknown>)["plans"]
+    const plansRaw = (raw && Array.isArray((raw as Record<string, unknown>)["data"])
+      ? (raw as Record<string, unknown>)["data"]
       : []) as Record<string, unknown>[];
     return plansRaw.map(parsePlan);
   }
