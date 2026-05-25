@@ -1,0 +1,30 @@
+## [1.2.0] - 2026-05-25
+
+### Added
+- `client.users` namespace: `getMe()`, `updateMe(name)` — read and update the authenticated user profile
+- `client.principals.resolve()` — find an active principal by email or provider_subject
+- `client.billing.getSubscription()` — fetch current subscription including `billing_period` and renewal date
+- `client.billing.createPortal()` — create a Stripe billing portal session
+- `client.dashboard.getStats({ sparklines: true })` — optional sparklines parameter for time-series KPI arrays
+- `client.simulator.runBatchPreview()` — evaluate one search against up to 5 principals (Pro+)
+- `scripts/check-contract.ts` — CI contract checker: walks OpenAPI spec and asserts SDK coverage
+
+### Fixed
+- **Critical:** `client.auth.login()` now correctly unwraps the `{user, tokens}` response envelope; previously `client._token` was never set so all post-login requests failed with 401
+- **Critical:** `IdentityProviderType` values corrected to match backend: `"azure_entra_id"`, `"aws_iam"`, `"gcp"` (were `"azure_ad"`, `"google"`, `"custom"` — none existed on the backend)
+- `client.connectors.updateSearchConfig()` and `updateIngestionConfig()` now wrap body in `{search_config:...}` / `{ingestion_config:...}` (previously sent bare body, causing 422)
+
+## [1.1.0] - 2026-04-29
+
+### Added
+- REBAC relationships resource (`client.relationships.create()`, `.list()`, `.delete()`)
+- `Relationship` and `CreateRelationshipRequest` types exported from the package
+
+## [1.0.0] - 2026-04-29
+
+### Added
+- API key management (`client.apiKeys.create()`, `.list()`, `.delete()`, `.rotate()`)
+- Onboarding status and dismissal (`client.onboarding.status()`, `.dismiss()`)
+
+### Changed
+- Initial stable release
