@@ -1,10 +1,29 @@
 /**
- * Users resource -- current user profile (GET /me, PATCH /me).
+ * Users resource -- current user profile (GET /me, PATCH /me) and organization settings.
  */
 
 import type { GatecoClient } from "../client.js";
 import type { User } from "../types/auth.js";
 import { parseUser } from "../types/auth.js";
+
+/** Organization settings returned by `GET /api/organization/settings`. */
+export interface OrgSettings {
+  id: string;
+  name: string;
+  slug: string;
+  plan: string;
+  failure_mode: string;
+  llm_provider: string;
+  llm_api_key_configured: boolean;
+}
+
+/** Fields that can be updated via `PATCH /api/organization/settings`. */
+export interface UpdateOrgSettingsRequest {
+  name?: string;
+  failure_mode?: string;
+  llm_api_key?: string;
+  llm_provider?: string;
+}
 
 /** Namespace for user profile endpoints. Accessed as `client.users`. */
 export class UsersResource {
@@ -28,5 +47,34 @@ export class UsersResource {
       json: { name },
     });
     return parseUser(data as Record<string, unknown>);
+  }
+
+  // ------------------------------------------------------------------
+  // Organization settings
+  // ------------------------------------------------------------------
+
+  /**
+   * Get organization-level settings.
+   *
+   * Returns configuration status for features that require per-org setup
+   * (e.g. whether an LLM API key is configured for answer synthesis).
+   */
+  async getOrgSettings(): Promise<OrgSettings> {
+    const data = await this.client._request("GET", "/api/organization/settings");
+    return data as unknown as OrgSettings;
+  }
+
+  /**
+   * Update organization settings.
+   *
+   * @param opts  Fields to update (all optional).
+   */
+  async updateOrgSettings(opts: UpdateOrgSettingsRequest): Promise<OrgSettings> {
+    const data = await this.client._request(
+      "PATCH",
+      "/api/organization/settings",
+      { json: opts as Record<string, unknown> },
+    );
+    return data as unknown as OrgSettings;
   }
 }

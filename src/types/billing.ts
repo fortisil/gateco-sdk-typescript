@@ -67,6 +67,7 @@ export interface Subscription {
   id: string;
   plan_id: string;
   status: string;
+  billing_period?: string;
   current_period_start?: string;
   current_period_end?: string;
   cancel_at_period_end: boolean;
@@ -172,9 +173,28 @@ export function parseSubscription(data: Record<string, unknown>): Subscription {
     id: data["id"] as string,
     plan_id: data["plan_id"] as string,
     status: data["status"] as string,
+    billing_period: data["billing_period"] as string | undefined,
     current_period_start: data["current_period_start"] as string | undefined,
     current_period_end: data["current_period_end"] as string | undefined,
     cancel_at_period_end: (data["cancel_at_period_end"] as boolean) ?? false,
+  };
+}
+
+/** Response from `POST /api/billing/sync-subscription`. */
+export interface SyncSubscriptionResponse {
+  synced: boolean;
+  already_correct: boolean;
+  plan: string;
+  billing_period: string | null;
+}
+
+/** Parse a raw JSON object into a SyncSubscriptionResponse. */
+export function parseSyncSubscriptionResponse(data: Record<string, unknown>): SyncSubscriptionResponse {
+  return {
+    synced: (data["synced"] as boolean) ?? false,
+    already_correct: (data["already_correct"] as boolean) ?? false,
+    plan: data["plan"] as string,
+    billing_period: (data["billing_period"] as string | null) ?? null,
   };
 }
 

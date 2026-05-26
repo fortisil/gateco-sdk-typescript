@@ -11,6 +11,7 @@ import type {
   Invoice,
   Subscription,
   CheckoutResponse,
+  SyncSubscriptionResponse,
 } from "../types/billing.js";
 import {
   parsePlan,
@@ -18,6 +19,7 @@ import {
   parseInvoice,
   parseSubscription,
   parseCheckoutResponse,
+  parseSyncSubscriptionResponse,
 } from "../types/billing.js";
 
 /** Namespace for billing endpoints. Accessed as `client.billing`. */
@@ -87,6 +89,30 @@ export class BillingResource {
       json: { plan_id: planId, billing_period: billingPeriod },
     });
     return parseCheckoutResponse(data as Record<string, unknown>);
+  }
+
+  // ------------------------------------------------------------------
+  // Billing Portal
+  // ------------------------------------------------------------------
+
+  // ------------------------------------------------------------------
+  // Subscription sync
+  // ------------------------------------------------------------------
+
+  /**
+   * Re-sync the organization's plan from Stripe.
+   *
+   * Use this when a checkout succeeded but the plan wasn't updated (e.g.
+   * webhook delivery delay). Resolves any limbo state by querying Stripe
+   * directly and updating the org plan if it has drifted.
+   */
+  async syncSubscription(): Promise<SyncSubscriptionResponse> {
+    const data = await this.client._request(
+      "POST",
+      "/api/billing/sync-subscription",
+      { json: {} },
+    );
+    return parseSyncSubscriptionResponse(data as Record<string, unknown>);
   }
 
   // ------------------------------------------------------------------
