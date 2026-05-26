@@ -1,3 +1,21 @@
+## [1.4.0] - 2026-05-26
+
+### Added
+- `UsersResource` and `RelationshipsResource` now exported from the root `@gateco/sdk` entry point (were accessible via sub-paths only)
+- `OrgSettings`, `UpdateOrgSettingsRequest`, and `ListRelationshipsParams` types re-exported from root entry point
+
+## [1.3.0] - 2026-05-26
+
+### Added
+- `OrgSettings` gains five new optional fields: `llm_fallback_credits_used`, `llm_fallback_credits_limit`, `llm_key_uses`, `llm_key_query_cap`, `llm_fallback_available`
+- `UpdateOrgSettingsRequest` gains `clear_llm_api_key?: boolean` and `llm_key_query_cap?: number | null`
+- `LlmCreditExhaustedError` — raised when the org's 100 paid-tier fallback synthesis credits are exhausted
+- `LlmKeyNotConfiguredError` — raised when answer synthesis is attempted on the free tier without a configured API key; both exported from top-level `@gateco/sdk`
+- `AnswerResponse.cap_reached?: boolean` — set when the latest response has hit the admin-configured query cap
+
+### Fixed
+- `errorFromResponse()` now correctly parses FastAPI's `{"detail": {"code": "...", "message": "..."}}` error envelope; previously all backend error codes were lost and `code` was always `UNKNOWN_ERROR`
+
 ## [1.2.0] - 2026-05-25
 
 ### Added

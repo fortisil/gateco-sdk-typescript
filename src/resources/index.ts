@@ -36,4 +36,5 @@ export type { CreateApiKeyParams } from "./api-keys.js";
 export { RelationshipsResource } from "./relationships.js";
 export type { ListRelationshipsParams } from "./relationships.js";
 export { UsersResource } from "./users.js";
+export type { OrgSettings, UpdateOrgSettingsRequest } from "./users.js";
 export type { RunPreviewOptions, RunBatchPreviewOptions } from "./simulator.js";

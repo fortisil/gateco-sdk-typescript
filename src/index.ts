@@ -29,6 +29,8 @@ export {
   EntitlementError,
   RateLimitError,
   ValidationError,
+  LlmCreditExhaustedError,
+  LlmKeyNotConfiguredError,
   errorFromResponse,
 } from "./errors.js";
 
@@ -63,8 +65,13 @@ export {
   AnswersResource,
   OnboardingResource,
   ApiKeysResource,
+  RelationshipsResource,
+  UsersResource,
 } from "./resources/index.js";
 export type {
+  OrgSettings,
+  UpdateOrgSettingsRequest,
+  ListRelationshipsParams,
   IngestDocumentOptions,
   ExecuteRetrievalOptions,
   ListRetrievalsFilters,
