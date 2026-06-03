@@ -173,7 +173,7 @@ export class PoliciesResource {
   // Versioning
   // ------------------------------------------------------------------
 
-  /** List all saved versions of a policy (Pro+ only). */
+  /** List all saved versions of a policy (Team+ only). */
   async listVersions(policyId: string): Promise<Record<string, unknown>[]> {
     const raw = await this.client._request(
       "GET",
@@ -183,7 +183,7 @@ export class PoliciesResource {
     return Array.isArray(items) ? (items as Record<string, unknown>[]) : [];
   }
 
-  /** Restore a policy to a saved version (Pro+ only). */
+  /** Restore a policy to a saved version (Team+ only). */
   async restoreVersion(policyId: string, version: number): Promise<Policy> {
     const data = await this.client._request(
       "POST",

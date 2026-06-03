@@ -15,6 +15,11 @@ export interface OrgSettings {
   failure_mode: string;
   llm_provider: string;
   llm_api_key_configured: boolean;
+  llm_fallback_credits_used?: number;
+  llm_fallback_credits_limit?: number;
+  llm_key_uses?: number;
+  llm_key_query_cap?: number | null;
+  llm_fallback_available?: boolean;
 }
 
 /** Fields that can be updated via `PATCH /api/organization/settings`. */
@@ -23,6 +28,8 @@ export interface UpdateOrgSettingsRequest {
   failure_mode?: string;
   llm_api_key?: string;
   llm_provider?: string;
+  clear_llm_api_key?: boolean;
+  llm_key_query_cap?: number | null;
 }
 
 /** Namespace for user profile endpoints. Accessed as `client.users`. */

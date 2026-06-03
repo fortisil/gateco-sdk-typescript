@@ -91,7 +91,7 @@ const grep = await client.retrievals.execute({
   searchMode: "grep",
 });
 
-// Grounded answer synthesis with citations (Pro+)
+// Grounded answer synthesis with citations (Team+)
 const answer = await client.answers.execute({
   query: "What was our Q4 revenue?",
   principalId: "user-123",
@@ -114,16 +114,16 @@ client.close();
 | `client.ingest` | Single document and batch ingestion |
 | `client.retrievals` | Execute, filter, list, get secured retrievals |
 | `client.policies` | Policy CRUD, activate, archive, and templates |
-| `client.answers` | Grounded answer synthesis with citations (Pro+) |
+| `client.answers` | Grounded answer synthesis with citations (Team+) |
 | `client.identityProviders` | Identity provider CRUD and sync |
 | `client.principals` | Principal listing, detail, and resolve |
 | `client.dataCatalog` | Gated resource listing and metadata updates |
 | `client.pipelines` | Pipeline CRUD and run management |
 | `client.billing` | Plans, usage, invoices, subscription, checkout |
 | `client.audit` | Audit log listing and CSV export |
-| `client.simulator` | Access simulation dry-runs (Pro+) |
+| `client.simulator` | Access simulation dry-runs (Growth+) |
 | `client.dashboard` | Dashboard statistics |
-| `client.relationships` | REBAC direct-relation CRUD — create, list, delete 1-hop tuples (Pro+) |
+| `client.relationships` | REBAC direct-relation CRUD — create, list, delete 1-hop tuples (Team+) |
 | `client.retroactive` | Retroactive vector registration |
 | `client.onboarding` | Onboarding wizard status and dismissal |
 | `client.apiKeys` | API key create, list, delete, and rotate |

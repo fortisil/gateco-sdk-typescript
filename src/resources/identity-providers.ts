@@ -140,7 +140,7 @@ export class IdentityProvidersResource {
   // ------------------------------------------------------------------
 
   /**
-   * Generate conservative policy suggestions from synced IDP principal data (Pro+ only).
+   * Generate conservative policy suggestions from synced IDP principal data (Growth+ only).
    *
    * Analyzes groups and departments in synced principals to suggest RBAC/ABAC starting
    * policies. Returns suggestions with confidence scores and explanations.
@@ -155,7 +155,7 @@ export class IdentityProvidersResource {
   }
 
   /**
-   * Apply accepted policy suggestions as draft policies (Pro+ only).
+   * Apply accepted policy suggestions as draft policies (Growth+ only).
    *
    * @param suggestionIds  List of suggestion IDs to apply. Only accepted suggestions
    *                       create policies; rejected IDs are ignored.

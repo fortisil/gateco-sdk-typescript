@@ -52,7 +52,7 @@ export class SimulatorResource {
   }
 
   /**
-   * Execute a live preview — real search + policy evaluation for a single principal (Pro+ only).
+   * Execute a live preview — real search + policy evaluation for a single principal (Growth+ only).
    *
    * Denied results contain metadata and denial reasons but no content.
    * `topK` is capped at 20 server-side.
@@ -72,7 +72,7 @@ export class SimulatorResource {
   }
 
   /**
-   * Execute a batch live preview — one search, policy evaluation for up to 5 principals (Pro+ only).
+   * Execute a batch live preview — one search, policy evaluation for up to 5 principals (Growth+ only).
    *
    * Returns a result matrix: per-principal allowed/denied breakdowns for the same query.
    */

@@ -11,6 +11,19 @@ export interface Citation {
   score?: number;
 }
 
+/** Diagnostics explaining why a retrieval outcome occurred. */
+export interface RetrievalDiagnostics {
+  candidates_fetched: number;
+  candidates_allowed: number;
+  candidates_denied: number;
+  refill_rounds: number;
+  policies_evaluated: number;
+  active_denial_reasons: string[];
+  metadata_resolution_mode?: string | null;
+  readiness_level?: number | null;
+  outcome_detail: string;
+}
+
 /** Response from `POST /api/answers/execute`. */
 export interface AnswerResponse {
   answer: string | null;
@@ -29,6 +42,8 @@ export interface AnswerResponse {
   chunks_used_final?: number;
   retry_used?: boolean;
   llm_calls?: number;
+  cap_reached?: boolean;
+  diagnostics?: RetrievalDiagnostics | null;
 }
 
 /** Request body for `POST /api/answers/execute`. */
@@ -74,5 +89,7 @@ export function parseAnswerResponse(data: Record<string, unknown>): AnswerRespon
     chunks_used_final: data["chunks_used_final"] as number | undefined,
     retry_used: (data["retry_used"] as boolean) ?? false,
     llm_calls: (data["llm_calls"] as number) ?? 0,
+    cap_reached: (data["cap_reached"] as boolean) ?? false,
+    diagnostics: data["diagnostics"] as RetrievalDiagnostics | null | undefined,
   };
 }
