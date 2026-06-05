@@ -24,7 +24,7 @@
 - `client.billing.getSubscription()` — fetch current subscription including `billing_period` and renewal date
 - `client.billing.createPortal()` — create a Stripe billing portal session
 - `client.dashboard.getStats({ sparklines: true })` — optional sparklines parameter for time-series KPI arrays
-- `client.simulator.runBatchPreview()` — evaluate one search against up to 5 principals (Pro+)
+- `client.simulator.runBatchPreview()` — evaluate one search against up to 5 principals (Growth+)
 - `scripts/check-contract.ts` — CI contract checker: walks OpenAPI spec and asserts SDK coverage
 
 ### Fixed

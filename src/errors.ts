@@ -128,6 +128,43 @@ export class ValidationError extends GatecoError {
   }
 }
 
+/**
+ * Raised when the org's 100 paid-tier fallback synthesis credits are exhausted.
+ *
+ * Add an OpenAI API key in Organization Settings to continue using answer synthesis.
+ */
+export class LlmCreditExhaustedError extends GatecoError {
+  constructor(
+    message = "Free synthesis credit (100 calls) exhausted. Add your OpenAI API key in Organization Settings.",
+    options: { code?: string } = {},
+  ) {
+    super(message, {
+      code: options.code ?? "LLM_CREDIT_EXHAUSTED",
+      statusCode: 422,
+    });
+    this.name = "LlmCreditExhaustedError";
+  }
+}
+
+/**
+ * Raised when answer synthesis is attempted without a configured LLM API key
+ * and the org is on the free tier (no fallback available).
+ *
+ * Add an OpenAI API key in Organization Settings to enable answer synthesis.
+ */
+export class LlmKeyNotConfiguredError extends GatecoError {
+  constructor(
+    message = "Answer synthesis requires your own OpenAI API key on the free plan. Add one in Organization Settings.",
+    options: { code?: string } = {},
+  ) {
+    super(message, {
+      code: options.code ?? "LLM_KEY_NOT_CONFIGURED",
+      statusCode: 422,
+    });
+    this.name = "LlmKeyNotConfiguredError";
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Mapping helpers
 // ---------------------------------------------------------------------------
@@ -148,15 +185,22 @@ const CODE_TO_ERROR: Record<string, typeof GatecoError> = {
   CONFLICT: ConflictError,
   VALIDATION_ERROR: ValidationError,
   RATE_LIMIT_EXCEEDED: RateLimitError,
+  LLM_CREDIT_EXHAUSTED: LlmCreditExhaustedError,
+  LLM_KEY_NOT_CONFIGURED: LlmKeyNotConfiguredError,
   INTERNAL_ERROR: GatecoError,
 };
 
+interface ErrorEnvelope {
+  code?: string;
+  message?: string;
+  upgrade_to?: string;
+}
+
 interface ErrorBody {
-  error?: {
-    code?: string;
-    message?: string;
-    upgrade_to?: string;
-  };
+  /** FastAPI HTTPException format: `{"detail": {"code": "...", "message": "..."}}` */
+  detail?: ErrorEnvelope | string;
+  /** Legacy SDK format: `{"error": {"code": "...", "message": "..."}}` */
+  error?: ErrorEnvelope;
 }
 
 /**
@@ -176,7 +220,14 @@ export function errorFromResponse(
   let message = "An unexpected error occurred";
   let upgradeTo: string | undefined;
 
-  if (body?.error && typeof body.error === "object") {
+  // FastAPI sends {"detail": {"code": "...", "message": "..."}} or {"detail": "string"}
+  if (body?.detail && typeof body.detail === "object") {
+    code = body.detail.code ?? code;
+    message = body.detail.message ?? message;
+    upgradeTo = body.detail.upgrade_to;
+  } else if (typeof body?.detail === "string") {
+    message = body.detail;
+  } else if (body?.error && typeof body.error === "object") {
     code = body.error.code ?? code;
     message = body.error.message ?? message;
     upgradeTo = body.error.upgrade_to;
