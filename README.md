@@ -208,6 +208,62 @@ const principal = await client.principals.resolve({
 Resolution is read-only -- it finds existing active principals but never creates them.
 Returns `NotFoundError` if no active principal matches.
 
+## Policy Creation
+
+```typescript
+// Create an RBAC policy
+const policy = await client.policies.create({
+  name: "Engineering read-only",
+  description: "Allow engineering group to read internal resources",
+  type: "rbac",
+  effect: "allow",
+  rules: [{
+    description: "Engineering group members",
+    effect: "allow",
+    conditions: [{ field: "principal.groups", operator: "contains", value: "engineering" }],
+    priority: 1,
+  }],
+  resource_selectors: [{ field: "resource.classification", op: "lte", value: "internal" }],
+});
+```
+
+Policy validation: condition fields must use `resource.`, `principal.`, or
+`relation.` prefix. Empty `resourceSelectors` require `applyToAllResources: true`.
+
+## Retrieval Diagnostics
+
+```typescript
+const result = await client.retrievals.execute({
+  query: "quarterly earnings",
+  principalId: "user-alice",
+  connectorId: "conn-finance-docs",
+  searchMode: "hybrid",
+});
+
+// Diagnostics on every retrieval response
+console.log(result.diagnostics?.outcomeDetail);       // Human-readable explanation
+console.log(result.diagnostics?.candidatesDenied);    // Denied by policy count
+console.log(result.diagnostics?.refillRounds);        // 0 = first pass sufficient
+```
+
+## Connector Preflight Check
+
+```typescript
+// Production readiness check
+const preflight = await client.connectors.preflight(connectorId);
+console.log(preflight.readyForProduction);   // boolean
+console.log(preflight.recommendation);       // string: what to fix
+```
+
+## Dashboard Activation Metrics
+
+```typescript
+const activation = await client.dashboard.getActivationStats();
+console.log(activation.totalRetrievals30d);
+console.log(activation.noAccessRetrievals30d);
+console.log(activation.p95LatencyMs);
+```
+
 ## Pagination
 
 ```typescript
