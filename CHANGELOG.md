@@ -1,3 +1,18 @@
+## [1.5.0] - 2026-07-28
+
+### Added
+- `EntitlementError.reason` — distinguishes the two conditions that share a 403 `ENTITLEMENT_REQUIRED`:
+  `"feature_not_in_plan"` (the plan does not grant the feature) and `"resource_limit_reached"` (the plan
+  grants it, but the org's quota is full). Both carry `upgradeTo`, so previously they were
+  indistinguishable without parsing the message string.
+- `EntitlementError.isLimit` / `EntitlementError.isFeatureGate` getters, plus the
+  `EntitlementError.REASON_FEATURE` / `REASON_LIMIT` constants. When `reason` is absent (older backend),
+  both report a feature gate, preserving pre-1.5.0 behaviour.
+
+### Requires
+- Backend with `error.reason` on entitlement responses (2026-07-28 or later). Against older backends the
+  SDK degrades gracefully: `reason` is `undefined` and `isFeatureGate` is `true`.
+
 ## [1.4.0] - 2026-05-26
 
 ### Added
