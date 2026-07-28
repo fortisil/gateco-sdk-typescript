@@ -1,3 +1,8 @@
+## [1.5.1] - 2026-07-28
+
+No functional changes. Released to verify the switch to Trusted Publishing (OIDC) — this version was
+published with no stored npm token. Identical in behaviour to 1.5.0.
+
 ## [1.5.0] - 2026-07-28
 
 ### Added
