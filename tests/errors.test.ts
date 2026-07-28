@@ -68,6 +68,47 @@ describe("EntitlementError", () => {
     expect(err.upgradeTo).toBe("pro");
     expect(err.code).toBe("ENTITLEMENT_REQUIRED");
   });
+
+  // A quota-exhausted 403 carries ENTITLEMENT_REQUIRED *and* upgradeTo, exactly
+  // like a missing feature. Without `reason`, a caller would tell the user to
+  // upgrade when deleting a resource would fix it.
+  it("distinguishes a resource limit from a feature gate", () => {
+    const limit = errorFromResponse(403, {
+      error: {
+        code: "ENTITLEMENT_REQUIRED",
+        message: "Plan limit reached: 10/10 connectors",
+        upgrade_to: "enterprise",
+        reason: "resource_limit_reached",
+      },
+    }) as EntitlementError;
+    expect(limit.reason).toBe("resource_limit_reached");
+    expect(limit.isLimit).toBe(true);
+    expect(limit.isFeatureGate).toBe(false);
+
+    const feature = errorFromResponse(403, {
+      error: {
+        code: "ENTITLEMENT_REQUIRED",
+        message: "Feature 'siem_export' is not available on the growth plan",
+        upgrade_to: "enterprise",
+        reason: "feature_not_in_plan",
+      },
+    }) as EntitlementError;
+    expect(feature.isLimit).toBe(false);
+    expect(feature.isFeatureGate).toBe(true);
+  });
+
+  it("treats a missing reason as a feature gate (older servers)", () => {
+    const err = errorFromResponse(403, {
+      error: {
+        code: "ENTITLEMENT_REQUIRED",
+        message: "legacy server",
+        upgrade_to: "growth",
+      },
+    }) as EntitlementError;
+    expect(err.reason).toBeUndefined();
+    expect(err.isLimit).toBe(false);
+    expect(err.isFeatureGate).toBe(true);
+  });
 });
 
 describe("RateLimitError", () => {

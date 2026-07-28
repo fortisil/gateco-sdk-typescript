@@ -75,14 +75,30 @@ export class ConflictError extends GatecoError {
 /**
  * Raised when the API returns 403 with ENTITLEMENT_REQUIRED.
  *
- * The `upgradeTo` field indicates the plan tier that grants the required entitlement.
+ * Two materially different conditions share this error:
+ *
+ * - `reason === "feature_not_in_plan"` — the plan does not grant the feature.
+ *   Upgrading to `upgradeTo` is the only remedy.
+ * - `reason === "resource_limit_reached"` — the plan *does* grant the feature,
+ *   but the org has consumed its quota. Deleting existing resources also
+ *   resolves it, so telling the user to upgrade would be wrong.
+ *
+ * Check `isLimit` rather than parsing `message`.
  */
 export class EntitlementError extends GatecoError {
+  static readonly REASON_FEATURE = "feature_not_in_plan";
+  static readonly REASON_LIMIT = "resource_limit_reached";
+
   readonly upgradeTo: string | undefined;
+  /**
+   * Machine-readable cause. `undefined` against servers predating the field,
+   * in which case the distinction is unavailable.
+   */
+  readonly reason: string | undefined;
 
   constructor(
     message = "Entitlement required",
-    options: { code?: string; upgradeTo?: string } = {},
+    options: { code?: string; upgradeTo?: string; reason?: string } = {},
   ) {
     super(message, {
       code: options.code ?? "ENTITLEMENT_REQUIRED",
@@ -90,6 +106,20 @@ export class EntitlementError extends GatecoError {
     });
     this.name = "EntitlementError";
     this.upgradeTo = options.upgradeTo;
+    this.reason = options.reason;
+  }
+
+  /** True when a plan *quota* was exhausted, not a missing feature. */
+  get isLimit(): boolean {
+    return this.reason === EntitlementError.REASON_LIMIT;
+  }
+
+  /**
+   * True when the plan genuinely lacks the feature. Defaults to true when
+   * `reason` is absent (older servers), preserving the pre-`reason` reading.
+   */
+  get isFeatureGate(): boolean {
+    return this.reason !== EntitlementError.REASON_LIMIT;
   }
 }
 
@@ -194,6 +224,8 @@ interface ErrorEnvelope {
   code?: string;
   message?: string;
   upgrade_to?: string;
+  /** `feature_not_in_plan` | `resource_limit_reached` (absent on older servers). */
+  reason?: string;
 }
 
 interface ErrorBody {
@@ -219,25 +251,28 @@ export function errorFromResponse(
   let code = "UNKNOWN_ERROR";
   let message = "An unexpected error occurred";
   let upgradeTo: string | undefined;
+  let reason: string | undefined;
 
   // FastAPI sends {"detail": {"code": "...", "message": "..."}} or {"detail": "string"}
   if (body?.detail && typeof body.detail === "object") {
     code = body.detail.code ?? code;
     message = body.detail.message ?? message;
     upgradeTo = body.detail.upgrade_to;
+    reason = body.detail.reason;
   } else if (typeof body?.detail === "string") {
     message = body.detail;
   } else if (body?.error && typeof body.error === "object") {
     code = body.error.code ?? code;
     message = body.error.message ?? message;
     upgradeTo = body.error.upgrade_to;
+    reason = body.error.reason;
   }
 
   // Prefer code-based lookup, fall back to status-based lookup.
   const ErrorClass = CODE_TO_ERROR[code] ?? STATUS_TO_ERROR[statusCode] ?? GatecoError;
 
   if (ErrorClass === EntitlementError) {
-    return new EntitlementError(message, { code, upgradeTo });
+    return new EntitlementError(message, { code, upgradeTo, reason });
   }
   if (ErrorClass === RateLimitError) {
     return new RateLimitError(message, { code, retryAfter });
