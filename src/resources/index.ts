@@ -16,6 +16,7 @@ export type {
   UpdateIdentityProviderOptions,
 } from "./identity-providers.js";
 export { PrincipalsResource } from "./principals.js";
+export { GroupsResource } from "./groups.js";
 export { DataCatalogResource } from "./data-catalog.js";
 export type { UpdateGatedResourceOptions } from "./data-catalog.js";
 export { PipelinesResource } from "./pipelines.js";
@@ -35,6 +36,8 @@ export { ApiKeysResource } from "./api-keys.js";
 export type { CreateApiKeyParams } from "./api-keys.js";
 export { RelationshipsResource } from "./relationships.js";
 export type { ListRelationshipsParams } from "./relationships.js";
+export type { ListPrincipalsOptions } from "./principals.js";
+export type { ListGroupsOptions } from "./groups.js";
 export { UsersResource } from "./users.js";
 export type { OrgSettings, UpdateOrgSettingsRequest } from "./users.js";
 export type { RunPreviewOptions, RunBatchPreviewOptions } from "./simulator.js";

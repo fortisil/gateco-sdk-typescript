@@ -6,6 +6,8 @@ import {
   // Resources added in 1.4.0
   UsersResource,
   RelationshipsResource,
+  // Directory resource
+  GroupsResource,
   // LLM credit errors
   LlmCreditExhaustedError,
   LlmKeyNotConfiguredError,
@@ -17,6 +19,9 @@ import type {
   OrgSettings,
   UpdateOrgSettingsRequest,
   ListRelationshipsParams,
+  ListPrincipalsOptions,
+  ListGroupsOptions,
+  PrincipalGroup,
 } from "../src/index.js";
 
 describe("SDK root export completeness (Gap #6)", () => {
@@ -58,5 +63,21 @@ describe("SDK root export completeness (Gap #6)", () => {
   it("ListRelationshipsParams type is structurally valid", () => {
     const params: ListRelationshipsParams = {} as ListRelationshipsParams;
     expect(params).toBeDefined();
+  });
+
+  it("GroupsResource is exported as a constructor", () => {
+    expect(typeof GroupsResource).toBe("function");
+  });
+
+  it("ListPrincipalsOptions type is structurally valid", () => {
+    const opts: ListPrincipalsOptions = { status: "all", group: "eng" };
+    expect(opts).toBeDefined();
+  });
+
+  it("ListGroupsOptions and PrincipalGroup types are structurally valid", () => {
+    const opts: ListGroupsOptions = { search: "eng" };
+    const group: PrincipalGroup = { id: "g1", member_count: 0 };
+    expect(opts).toBeDefined();
+    expect(group.member_count).toBe(0);
   });
 });

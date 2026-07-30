@@ -33,6 +33,7 @@ const RESOURCE_MAP: Record<string, string | null> = {
   "/api/answers": "answers",
   "/api/audit-log": "audit",
   "/api/principals": "principals",
+  "/api/groups": "groups",
   "/api/relationships": "relationships",
   "/api/identity-providers": "identityProviders",
   "/api/api-keys": "apiKeys",

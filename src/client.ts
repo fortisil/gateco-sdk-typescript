@@ -13,6 +13,7 @@ import { IngestionResource } from "./resources/ingestion.js";
 import { RetrievalsResource } from "./resources/retrievals.js";
 import { PoliciesResource } from "./resources/policies.js";
 import { IdentityProvidersResource } from "./resources/identity-providers.js";
+import { GroupsResource } from "./resources/groups.js";
 import { PrincipalsResource } from "./resources/principals.js";
 import { DataCatalogResource } from "./resources/data-catalog.js";
 import { PipelinesResource } from "./resources/pipelines.js";
@@ -73,6 +74,7 @@ export class GatecoClient {
   private _policies: PoliciesResource | undefined;
   private _identityProviders: IdentityProvidersResource | undefined;
   private _principals: PrincipalsResource | undefined;
+  private _groups: GroupsResource | undefined;
   private _dataCatalog: DataCatalogResource | undefined;
   private _pipelines: PipelinesResource | undefined;
   private _billing: BillingResource | undefined;
@@ -153,6 +155,14 @@ export class GatecoClient {
       this._principals = new PrincipalsResource(this);
     }
     return this._principals;
+  }
+
+  /** Read-only directory of IdP-synced groups. */
+  get groups(): GroupsResource {
+    if (this._groups === undefined) {
+      this._groups = new GroupsResource(this);
+    }
+    return this._groups;
   }
 
   /** Data catalog operations. */

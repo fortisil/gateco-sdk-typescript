@@ -84,6 +84,9 @@ export type {
 } from "./principals.js";
 export { parsePrincipal } from "./principals.js";
 
+export type { PrincipalGroup } from "./groups.js";
+export { parsePrincipalGroup } from "./groups.js";
+
 export type {
   DataCatalogFilters,
   ResourceChunk,

@@ -26,6 +26,7 @@ export interface Principal {
   status?: string;
   last_seen?: string;
   created_at?: string;
+  updated_at?: string;
 }
 
 /** Parse a raw JSON object into a Principal. */
@@ -44,5 +45,6 @@ export function parsePrincipal(data: Record<string, unknown>): Principal {
     status: data["status"] as string | undefined,
     last_seen: data["last_seen"] as string | undefined,
     created_at: data["created_at"] as string | undefined,
+    updated_at: data["updated_at"] as string | undefined,
   };
 }

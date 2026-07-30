@@ -8,6 +8,33 @@ import { parsePage, listAll } from "../pagination.js";
 import type { Principal } from "../types/principals.js";
 import { parsePrincipal } from "../types/principals.js";
 
+/** Optional filters for listing principals. */
+export interface ListPrincipalsOptions {
+  /**
+   * Status filter: "active", "inactive", "suspended", or "all".
+   * Omitted = active only (the legacy default).
+   */
+  status?: "active" | "inactive" | "suspended" | "all";
+  /** Case-insensitive substring filter on display name or email. */
+  search?: string;
+  /** Exact group name the principal is a member of. */
+  group?: string;
+}
+
+function principalParams(
+  page: number,
+  perPage: number,
+  options?: ListPrincipalsOptions,
+): Record<string, string | number | boolean | undefined> {
+  return {
+    page,
+    per_page: perPage,
+    status: options?.status,
+    search: options?.search,
+    group: options?.group,
+  };
+}
+
 /** Namespace for principal endpoints. Accessed as `client.principals`. */
 export class PrincipalsResource {
   constructor(private readonly client: GatecoClient) {}
@@ -17,19 +44,26 @@ export class PrincipalsResource {
   // ------------------------------------------------------------------
 
   /** Fetch a single page of principals. */
-  async list(page = 1, perPage = 20): Promise<Page<Principal>> {
+  async list(
+    page = 1,
+    perPage = 20,
+    options?: ListPrincipalsOptions,
+  ): Promise<Page<Principal>> {
     const raw = await this.client._request("GET", "/api/principals", {
-      params: { page, per_page: perPage },
+      params: principalParams(page, perPage, options),
     });
     return parsePage(raw, page, perPage, parsePrincipal);
   }
 
   /** Return an async generator that lazily paginates through all principals. */
-  listAll(perPage = 100): AsyncGenerator<Principal, void, undefined> {
+  listAll(
+    perPage = 100,
+    options?: ListPrincipalsOptions,
+  ): AsyncGenerator<Principal, void, undefined> {
     return listAll(
       async (page, pp) =>
         (await this.client._request("GET", "/api/principals", {
-          params: { page, per_page: pp },
+          params: principalParams(page, pp, options),
         })) ?? {},
       parsePrincipal,
       perPage,
