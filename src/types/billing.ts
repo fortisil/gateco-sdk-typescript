@@ -20,6 +20,7 @@ export interface PlanFeatures {
   sso: boolean;
   batch_ingestion: boolean;
   async_ingestion: boolean;
+  source_connectors: boolean;
 }
 
 /** A billing plan. */
@@ -109,6 +110,7 @@ export function parsePlanFeatures(data: Record<string, unknown>): PlanFeatures {
     sso: (data["sso"] as boolean) ?? false,
     batch_ingestion: (data["batch_ingestion"] as boolean) ?? false,
     async_ingestion: (data["async_ingestion"] as boolean) ?? false,
+    source_connectors: (data["source_connectors"] as boolean) ?? false,
   };
 }
 
