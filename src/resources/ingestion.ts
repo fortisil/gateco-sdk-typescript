@@ -6,6 +6,28 @@ import type { GatecoClient } from "../client.js";
 import type { IngestDocumentResponse, BatchIngestResponse } from "../types/ingestion.js";
 import { parseIngestDocumentResponse, parseBatchIngestResponse } from "../types/ingestion.js";
 
+/**
+ * Per-request chunking override. Applies to one request only; the
+ * connector's pinned chunking configuration is unchanged.
+ */
+export interface ChunkingOverride {
+  strategy: "characters" | "tokens" | "recursive" | "markdown";
+  chunk_size?: number;
+  chunk_overlap?: number;
+}
+
+/**
+ * Per-request embedding provider override. No api_key field by design:
+ * keys resolve server-side from provider env vars, or the request targets
+ * a customer-hosted keyless endpoint (openai_compatible).
+ */
+export interface EmbeddingOverride {
+  provider: "openai" | "openai_compatible" | "cohere" | "voyage";
+  model?: string;
+  dimensions?: number;
+  base_url?: string;
+}
+
 /** Options for single document ingestion. */
 export interface IngestDocumentOptions {
   classification?: string;
@@ -15,6 +37,8 @@ export interface IngestDocumentOptions {
   metadata?: Record<string, unknown>;
   ownerPrincipalId?: string;
   idempotencyKey?: string;
+  chunking?: ChunkingOverride;
+  embedding?: EmbeddingOverride;
 }
 
 /** Namespace for ingestion endpoints. Accessed as `client.ingest`. */
@@ -49,6 +73,8 @@ export class IngestionResource {
     if (options.metadata !== undefined) body["metadata"] = options.metadata;
     if (options.ownerPrincipalId !== undefined) body["owner_principal_id"] = options.ownerPrincipalId;
     if (options.idempotencyKey !== undefined) body["idempotency_key"] = options.idempotencyKey;
+    if (options.chunking !== undefined) body["chunking"] = options.chunking;
+    if (options.embedding !== undefined) body["embedding"] = options.embedding;
 
     const data = await this.client._request("POST", "/api/v1/ingest", { json: body });
     return parseIngestDocumentResponse(data as Record<string, unknown>);
@@ -70,6 +96,7 @@ export class IngestionResource {
     connectorId: string,
     records: Record<string, unknown>[],
     idempotencyKey?: string,
+    options: { chunking?: ChunkingOverride; embedding?: EmbeddingOverride } = {},
   ): Promise<BatchIngestResponse> {
     const body: Record<string, unknown> = {
       connector_id: connectorId,
@@ -78,6 +105,8 @@ export class IngestionResource {
     if (idempotencyKey !== undefined) {
       body["idempotency_key"] = idempotencyKey;
     }
+    if (options.chunking !== undefined) body["chunking"] = options.chunking;
+    if (options.embedding !== undefined) body["embedding"] = options.embedding;
 
     const data = await this.client._request("POST", "/api/v1/ingest/batch", { json: body });
     return parseBatchIngestResponse(data as Record<string, unknown>);

@@ -5,7 +5,7 @@
 export { AuthResource } from "./auth.js";
 export { ConnectorsResource } from "./connectors.js";
 export { IngestionResource } from "./ingestion.js";
-export type { IngestDocumentOptions } from "./ingestion.js";
+export type { IngestDocumentOptions, ChunkingOverride, EmbeddingOverride } from "./ingestion.js";
 export { RetrievalsResource } from "./retrievals.js";
 export type { ExecuteRetrievalOptions, FilterRetrievalOptions, ListRetrievalsFilters } from "./retrievals.js";
 export { PoliciesResource } from "./policies.js";

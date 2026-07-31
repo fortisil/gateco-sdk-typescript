@@ -76,6 +76,8 @@ export type {
   ListPrincipalsOptions,
   ListGroupsOptions,
   IngestDocumentOptions,
+  ChunkingOverride,
+  EmbeddingOverride,
   ExecuteRetrievalOptions,
   ListRetrievalsFilters,
   CreatePolicyOptions,
