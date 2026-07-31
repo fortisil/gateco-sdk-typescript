@@ -19,6 +19,7 @@ export interface PlanFeatures {
   custom_roles: boolean;
   sso: boolean;
   batch_ingestion: boolean;
+  async_ingestion: boolean;
 }
 
 /** A billing plan. */
@@ -107,6 +108,7 @@ export function parsePlanFeatures(data: Record<string, unknown>): PlanFeatures {
     custom_roles: (data["custom_roles"] as boolean) ?? false,
     sso: (data["sso"] as boolean) ?? false,
     batch_ingestion: (data["batch_ingestion"] as boolean) ?? false,
+    async_ingestion: (data["async_ingestion"] as boolean) ?? false,
   };
 }
 
