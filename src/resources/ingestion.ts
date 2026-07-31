@@ -57,7 +57,9 @@ export class IngestionResource {
   /**
    * Ingest a batch of documents in a single request.
    *
-   * Requires a Tier 1 connector (pgvector, supabase, neon, pinecone, qdrant).
+   * Requires a Tier 1 connector (pgvector, supabase, neon, pinecone, qdrant)
+   * and the `batch_ingestion` feature (Team plan and above); free-plan orgs
+   * receive an EntitlementError with `reason="feature_not_in_plan"`.
    *
    * @param connectorId - Target connector (must be Tier 1).
    * @param records - List of record objects, each containing at minimum

@@ -8,6 +8,7 @@ export interface PlanLimits {
   connectors?: number;
   policies?: number;
   identity_providers?: number;
+  ingested_documents?: number;
 }
 
 /** Feature flags for a plan tier. */
@@ -17,6 +18,7 @@ export interface PlanFeatures {
   access_simulator: boolean;
   custom_roles: boolean;
   sso: boolean;
+  batch_ingestion: boolean;
 }
 
 /** A billing plan. */
@@ -92,6 +94,7 @@ export function parsePlanLimits(data: Record<string, unknown>): PlanLimits {
     connectors: data["connectors"] as number | undefined,
     policies: data["policies"] as number | undefined,
     identity_providers: data["identity_providers"] as number | undefined,
+    ingested_documents: data["ingested_documents"] as number | undefined,
   };
 }
 
@@ -103,6 +106,7 @@ export function parsePlanFeatures(data: Record<string, unknown>): PlanFeatures {
     access_simulator: (data["access_simulator"] as boolean) ?? false,
     custom_roles: (data["custom_roles"] as boolean) ?? false,
     sso: (data["sso"] as boolean) ?? false,
+    batch_ingestion: (data["batch_ingestion"] as boolean) ?? false,
   };
 }
 
