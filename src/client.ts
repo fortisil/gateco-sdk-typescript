@@ -10,6 +10,7 @@ import { parseTokenResponse } from "./types/auth.js";
 import { AuthResource } from "./resources/auth.js";
 import { ConnectorsResource } from "./resources/connectors.js";
 import { IngestionResource } from "./resources/ingestion.js";
+import { SourceConnectionsResource } from "./resources/sourceConnections.js";
 import { RetrievalsResource } from "./resources/retrievals.js";
 import { PoliciesResource } from "./resources/policies.js";
 import { IdentityProvidersResource } from "./resources/identity-providers.js";
@@ -70,6 +71,7 @@ export class GatecoClient {
   private _auth: AuthResource | undefined;
   private _connectors: ConnectorsResource | undefined;
   private _ingest: IngestionResource | undefined;
+  private _sources: SourceConnectionsResource | undefined;
   private _retrievals: RetrievalsResource | undefined;
   private _policies: PoliciesResource | undefined;
   private _identityProviders: IdentityProvidersResource | undefined;
@@ -118,6 +120,13 @@ export class GatecoClient {
   }
 
   /** Document ingestion operations. */
+  get sources(): SourceConnectionsResource {
+    if (this._sources === undefined) {
+      this._sources = new SourceConnectionsResource(this);
+    }
+    return this._sources;
+  }
+
   get ingest(): IngestionResource {
     if (this._ingest === undefined) {
       this._ingest = new IngestionResource(this);

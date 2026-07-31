@@ -41,3 +41,7 @@ export type { ListGroupsOptions } from "./groups.js";
 export { UsersResource } from "./users.js";
 export type { OrgSettings, UpdateOrgSettingsRequest } from "./users.js";
 export type { RunPreviewOptions, RunBatchPreviewOptions } from "./simulator.js";
+export { IngestionJobsResource } from "./ingestionJobs.js";
+export type { IngestionJobView } from "./ingestionJobs.js";
+export { SourceConnectionsResource } from "./sourceConnections.js";
+export type { SourceConnectionView, AclCoverageView } from "./sourceConnections.js";

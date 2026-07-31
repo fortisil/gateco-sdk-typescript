@@ -3,6 +3,7 @@
  */
 
 import type { GatecoClient } from "../client.js";
+import { IngestionJobsResource } from "./ingestionJobs.js";
 import type { IngestDocumentResponse, BatchIngestResponse } from "../types/ingestion.js";
 import { parseIngestDocumentResponse, parseBatchIngestResponse } from "../types/ingestion.js";
 
@@ -43,7 +44,12 @@ export interface IngestDocumentOptions {
 
 /** Namespace for ingestion endpoints. Accessed as `client.ingest`. */
 export class IngestionResource {
-  constructor(private readonly client: GatecoClient) {}
+  /** Async ingestion jobs (Team plan and above). */
+  readonly jobs: IngestionJobsResource;
+
+  constructor(private readonly client: GatecoClient) {
+    this.jobs = new IngestionJobsResource(client);
+  }
 
   /**
    * Ingest a single document.
@@ -110,5 +116,16 @@ export class IngestionResource {
 
     const data = await this.client._request("POST", "/api/v1/ingest/batch", { json: body });
     return parseBatchIngestResponse(data as Record<string, unknown>);
+  }
+
+  /** Tombstone an ingested resource: vectors + registry + soft delete. */
+  async deleteResource(
+    connectorId: string,
+    externalResourceId: string,
+  ): Promise<Record<string, unknown>> {
+    return (await this.client._request(
+      "DELETE",
+      `/api/v1/ingest/resources/${encodeURIComponent(externalResourceId)}?connector_id=${connectorId}`,
+    )) as Record<string, unknown>;
   }
 }
