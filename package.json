@@ -15,7 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "check:contract": "npx ts-node --esm scripts/check-contract.ts"
+    "check:contract": "node scripts/check-contract.mjs"
   },
   "devDependencies": {
     "typescript": "^5.4.0",
