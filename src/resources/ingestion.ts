@@ -5,6 +5,8 @@
 import type { GatecoClient } from "../client.js";
 import { IngestionJobsResource } from "./ingestionJobs.js";
 import type { IngestDocumentResponse, BatchIngestResponse } from "../types/ingestion.js";
+import type { IngestFileResponse, BatchFileIngestResponse } from "../types/ingestion.js";
+import { parseIngestFileResponse, parseBatchFileIngestResponse } from "../types/ingestion.js";
 import { parseIngestDocumentResponse, parseBatchIngestResponse } from "../types/ingestion.js";
 
 /**
@@ -43,6 +45,31 @@ export interface IngestDocumentOptions {
 }
 
 /** Namespace for ingestion endpoints. Accessed as `client.ingest`. */
+/** Options for `ingest.file()` (mirrors the Python SDK's form fields). */
+export interface IngestFileOptions {
+  externalResourceId?: string;
+  classification?: string;
+  sensitivity?: string;
+  domain?: string;
+  labels?: string[];
+  metadata?: Record<string, unknown>;
+  idempotencyKey?: string;
+}
+
+/** One file in an `ingest.files()` batch. */
+export interface FileUpload {
+  file: Blob;
+  filename: string;
+}
+
+/** Options for `ingest.files()` (applied to every file in the batch). */
+export interface IngestFilesOptions {
+  domain?: string;
+  classification?: string;
+  sensitivity?: string;
+  labels?: string[];
+}
+
 export class IngestionResource {
   /** Async ingestion jobs (Team plan and above). */
   readonly jobs: IngestionJobsResource;
@@ -127,5 +154,50 @@ export class IngestionResource {
       "DELETE",
       `/api/v1/ingest/resources/${encodeURIComponent(externalResourceId)}?connector_id=${connectorId}`,
     )) as Record<string, unknown>;
+  }
+
+  /**
+   * Upload one file for extraction, chunking, embedding and registration
+   * (`POST /api/v1/ingest/file`, multipart). Works with a `Blob`/`File` in
+   * browsers and Node 18+.
+   */
+  async file(
+    connectorId: string,
+    file: Blob,
+    filename: string,
+    options: IngestFileOptions = {},
+  ): Promise<IngestFileResponse> {
+    const form = new FormData();
+    form.append("connector_id", connectorId);
+    if (options.externalResourceId !== undefined) form.append("external_resource_id", options.externalResourceId);
+    if (options.classification !== undefined) form.append("classification", options.classification);
+    if (options.sensitivity !== undefined) form.append("sensitivity", options.sensitivity);
+    if (options.domain !== undefined) form.append("domain", options.domain);
+    if (options.labels !== undefined) form.append("labels", options.labels.join(","));
+    if (options.metadata !== undefined) form.append("metadata_json", JSON.stringify(options.metadata));
+    if (options.idempotencyKey !== undefined) form.append("idempotency_key", options.idempotencyKey);
+    form.append("file", file, filename);
+    const data = await this.client._request("POST", "/api/v1/ingest/file", { formData: form });
+    return parseIngestFileResponse(data ?? {});
+  }
+
+  /**
+   * Upload several files in one request (`POST /api/v1/ingest/files`,
+   * multipart, Team+ like the JSON batch endpoint).
+   */
+  async files(
+    connectorId: string,
+    uploads: FileUpload[],
+    options: IngestFilesOptions = {},
+  ): Promise<BatchFileIngestResponse> {
+    const form = new FormData();
+    form.append("connector_id", connectorId);
+    if (options.domain !== undefined) form.append("domain", options.domain);
+    if (options.classification !== undefined) form.append("classification", options.classification);
+    if (options.sensitivity !== undefined) form.append("sensitivity", options.sensitivity);
+    if (options.labels !== undefined) form.append("labels", options.labels.join(","));
+    for (const u of uploads) form.append("files", u.file, u.filename);
+    const data = await this.client._request("POST", "/api/v1/ingest/files", { formData: form });
+    return parseBatchFileIngestResponse(data ?? {});
   }
 }

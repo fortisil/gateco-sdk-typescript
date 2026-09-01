@@ -29,6 +29,11 @@ export interface RequestOptions {
   params?: Record<string, string | number | boolean | undefined>;
   /** Extra headers merged with defaults. */
   headers?: Record<string, string>;
+  /**
+   * Multipart body (file uploads). When set, `json` is ignored and no
+   * Content-Type header is sent so fetch can add the multipart boundary.
+   */
+  formData?: FormData;
 }
 
 /**
@@ -70,8 +75,8 @@ export class Transport {
       const url = this.buildUrl(path, options.params);
 
       const headers: Record<string, string> = {
-        "Content-Type": "application/json",
         Accept: "application/json",
+        ...(options.formData ? {} : { "Content-Type": "application/json" }),
         ...options.headers,
       };
 
@@ -83,7 +88,7 @@ export class Transport {
         response = await fetch(url, {
           method,
           headers,
-          body: options.json ? JSON.stringify(options.json) : undefined,
+          body: options.formData ?? (options.json ? JSON.stringify(options.json) : undefined),
           signal: controller.signal,
         });
       } catch (err) {

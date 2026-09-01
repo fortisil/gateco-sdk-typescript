@@ -51,6 +51,8 @@ export {
   AuthResource,
   ConnectorsResource,
   IngestionResource,
+  IngestionJobsResource,
+  SourceConnectionsResource,
   RetrievalsResource,
   PoliciesResource,
   IdentityProvidersResource,
