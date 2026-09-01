@@ -7,6 +7,8 @@ import type { ApiKey, CreateApiKeyResponse } from "../types/api-keys.js";
 
 /** Parameters for creating a new API key. */
 export interface CreateApiKeyParams {
+  /** What the key may do. Required: "ingest" | "relationships" | "retrieve" | "principals". */
+  scopes: Array<"ingest" | "relationships" | "retrieve" | "principals">;
   /** Human-readable label for the key. */
   name: string;
   /** Optional ISO 8601 expiry date. If omitted the key does not expire. */
@@ -24,7 +26,7 @@ export class ApiKeysResource {
    * never stored -- copy it immediately.
    */
   async create(params: CreateApiKeyParams): Promise<CreateApiKeyResponse> {
-    const body: Record<string, unknown> = { name: params.name };
+    const body: Record<string, unknown> = { name: params.name, scopes: params.scopes };
     if (params.expires_at !== undefined) body["expires_at"] = params.expires_at;
     const data = await this.client._request("POST", "/api/api-keys", { json: body });
     return parseCreateApiKeyResponse(data as Record<string, unknown>);

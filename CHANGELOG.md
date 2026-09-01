@@ -1,4 +1,59 @@
-## [1.6.0] - 2026-07-31
+# Changelog
+
+## [1.9.0] - 2026-09-01
+
+### Changed (breaking for two call patterns; see below)
+- **Default base URL is now `https://api.gateco.ai`**, overridable with the `GATECO_BASE_URL`
+  environment variable. It used to be `http://localhost:8000`, which made every documented
+  snippet fail for anyone outside the repository. Local development sets
+  `GATECO_BASE_URL=http://localhost:8000`.
+- **`apiKeys.create()` now requires `scopes`** (`create({ name, scopes })`). Calling it without scopes returns HTTP 422 from the
+  server. Scopes: `ingest`, `relationships`, `retrieve`, `principals`. Existing stored keys were
+  migrated to `ingest` + `relationships`, exactly their previous reach; `retrieve` is always an
+  explicit opt-in.
+
+### Added
+- API keys work on the retrieval path. A key with the `retrieve` scope can call
+  `retrievals.execute` / `filter`, `answers.execute`, `principals.resolve` / `list` / `get` and
+  `connectors.list` (minimal shape). This is the machine credential a RAG service or MCP host
+  should use; `login()` is for the console and account management. Keys are available on every
+  plan (limit: Free 2 / Team 10 / Growth 25 / Enterprise unlimited).
+- Local principals: `principals.create()` / `update()` / `delete()` manage users in the org's built-in
+  local directory without an identity provider (Free 10 / Team 100 / Growth+ unlimited).
+  `Principal.identity_provider_type` is `"local"` for these.
+- `users.getMe()` returns an `auth` block (`kind`, `key_id`, `key_name`, `scopes`) describing how
+  the call authenticated.
+- MCP: the authentication error now says a key needs the `retrieve` scope, and a scope-missing 403
+  is reported as such. `server.json` describes the required scope. MCP works on every plan.
+
+### Fixed
+- A 401 from a JWT-only endpoint when an API key was supplied now reads
+  `AUTH_JWT_REQUIRED: This endpoint requires a user session; API keys are not accepted here`
+  instead of `Missing authentication token`.
+- API key `last_used_at` is persisted on read-only calls (it stayed `Never` after real use).
+- Rotating a key preserves its scopes.
+
+## [1.8.0] - 2026-07-31
+
+### Added
+- Async ingestion jobs (Team plan and above): `client.ingest.jobs` (`enqueue/get/list/cancel/waitFor`).
+- Resource tombstones: `client.ingest.deleteResource()` removes an ingested resource's vectors,
+  registry chunks, and gated resource.
+- Source connections (Growth plan and above): `client.sources` for Google Drive, SharePoint,
+  Confluence and Notion, with `aclCoverage()`, plus `PlanFeatures.async_ingestion` and
+  `PlanFeatures.source_connectors`.
+
+(This entry and 1.7.0 were missing from this changelog at release time and were added on
+2026-09-01; the Python changelog carried them.)
+
+## [1.7.0] - 2026-07-31
+
+### Added
+- `chunking` override on ingest document/batch (`characters`, `tokens`, `recursive`, `markdown`).
+- `embedding` override on ingest document/batch (`openai`, `openai_compatible`, `cohere`, `voyage`);
+  requests never carry API keys.
+
+[1.6.0] - 2026-07-31
 
 ### Added
 - `PlanLimits.ingested_documents` and `PlanFeatures.batch_ingestion` typed fields, matching the new

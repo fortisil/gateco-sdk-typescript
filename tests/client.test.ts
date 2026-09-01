@@ -7,8 +7,22 @@ describe("GatecoClient", () => {
   it("creates with default options", () => {
     const client = new GatecoClient();
     expect(client).toBeInstanceOf(GatecoClient);
-    expect(client._transport.baseUrl).toBe("http://localhost:8000");
+    // 1.9.0: production by default. Localhost was the reason every documented
+    // snippet failed outside the repo.
+    expect(client._transport.baseUrl).toBe("https://api.gateco.ai");
     client.close();
+  });
+
+  it("honours GATECO_BASE_URL when no baseUrl is given", () => {
+    const prev = process.env.GATECO_BASE_URL;
+    process.env.GATECO_BASE_URL = "http://localhost:8000";
+    try {
+      const client = new GatecoClient();
+      expect(client._transport.baseUrl).toBe("http://localhost:8000");
+    } finally {
+      if (prev === undefined) delete process.env.GATECO_BASE_URL;
+      else process.env.GATECO_BASE_URL = prev;
+    }
   });
 
   it("creates with custom base URL", () => {

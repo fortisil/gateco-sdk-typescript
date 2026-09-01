@@ -91,7 +91,11 @@ export class GatecoClient {
   private _users: UsersResource | undefined;
 
   constructor(options: GatecoClientOptions = {}) {
-    this._transport = new Transport(options.baseUrl ?? "http://localhost:8000", {
+    // Since 1.9.0 the default is production, overridable with GATECO_BASE_URL.
+    // It used to be localhost, which is why documented snippets failed off-repo.
+    const envBase =
+      typeof process !== "undefined" ? process.env?.GATECO_BASE_URL : undefined;
+    this._transport = new Transport(options.baseUrl ?? envBase ?? "https://api.gateco.ai", {
       timeout: options.timeout,
       maxRetries: options.maxRetries,
       retryBackoffFactor: options.retryBackoffFactor,
