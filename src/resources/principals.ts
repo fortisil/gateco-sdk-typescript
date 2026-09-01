@@ -81,6 +81,58 @@ export class PrincipalsResource {
   }
 
   // ------------------------------------------------------------------
+  // Local directory (create / update / delete)
+  // ------------------------------------------------------------------
+
+  /**
+   * Create a principal in the organisation's built-in local directory.
+   *
+   * Available on every plan, bounded by the plan's `principals` limit
+   * (Free 10 / Team 100 / Growth+ unlimited). The local directory is
+   * provisioned automatically on first use and never syncs.
+   *
+   * @throws {ConflictError} An active principal with this email already exists.
+   * @throws {EntitlementError} The plan's principal limit is reached (`isLimit`).
+   */
+  async create(params: {
+    email: string;
+    display_name?: string;
+    groups?: string[];
+    roles?: string[];
+    attributes?: Record<string, unknown>;
+    provider_subject?: string;
+  }): Promise<Principal> {
+    const data = await this.client._request("POST", "/api/principals", {
+      json: params,
+    });
+    return parsePrincipal(data as Record<string, unknown>);
+  }
+
+  /** Update a local principal. Synced principals are rejected with 422. */
+  async update(
+    principalId: string,
+    params: {
+      display_name?: string;
+      groups?: string[];
+      roles?: string[];
+      attributes?: Record<string, unknown>;
+      status?: "active" | "inactive" | "suspended";
+    },
+  ): Promise<Principal> {
+    const data = await this.client._request(
+      "PATCH",
+      `/api/principals/${principalId}`,
+      { json: params },
+    );
+    return parsePrincipal(data as Record<string, unknown>);
+  }
+
+  /** Deactivate a local principal (status -> inactive). Never a hard delete. */
+  async delete(principalId: string): Promise<void> {
+    await this.client._request("DELETE", `/api/principals/${principalId}`);
+  }
+
+  // ------------------------------------------------------------------
   // Resolve
   // ------------------------------------------------------------------
 

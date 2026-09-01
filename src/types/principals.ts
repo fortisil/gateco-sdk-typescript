@@ -15,6 +15,8 @@ export interface Principal {
   id: string;
   identity_provider_id?: string;
   identity_provider_name?: string;
+  /** "local" means directly managed (create/update/delete via this SDK); any other value is owned by a synced provider. */
+  identity_provider_type?: string;
   external_id?: string;
   /** Provider-native subject identifier (e.g. Okta user ID, Google sub claim). */
   provider_subject?: string;
