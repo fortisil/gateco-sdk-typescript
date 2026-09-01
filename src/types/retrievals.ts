@@ -73,6 +73,12 @@ export interface FilterResult {
   granted: boolean;
   policy_decision: "allowed" | "denied";
   denial_reason?: string | null;
+  /** Sidecar chunk id (execute endpoint); null for inline / sql_view subjects. */
+  chunk_id?: string | null;
+  /** The policy whose matched rule decided this result, when one did. */
+  matched_policy_id?: string | null;
+  /** Which metadata resolution path produced the policy subject. */
+  metadata_resolution_mode_used?: "sidecar" | "inline" | "sql_view" | null;
 }
 
 /** Full retrieval record returned by list / get / execute endpoints. */
@@ -119,6 +125,14 @@ export function parseFilterResult(data: Record<string, unknown>): FilterResult {
     granted: (data["granted"] as boolean) ?? false,
     policy_decision: data["policy_decision"] as "allowed" | "denied",
     denial_reason: data["denial_reason"] as string | null | undefined,
+    chunk_id: data["chunk_id"] as string | null | undefined,
+    matched_policy_id: data["matched_policy_id"] as string | null | undefined,
+    metadata_resolution_mode_used: data["metadata_resolution_mode_used"] as
+      | "sidecar"
+      | "inline"
+      | "sql_view"
+      | null
+      | undefined,
   };
 }
 
