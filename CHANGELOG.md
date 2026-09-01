@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.10.0] - 2026-09-01
+
+### Added
+- `client.ingest.file(connectorId, blob, filename, options)` and
+  `client.ingest.files(connectorId, uploads, options)`: multipart uploads over native
+  `fetch` (`Blob`/`File`, Node 18+ and browsers). The TypeScript SDK could not reach
+  `/api/v1/ingest/file` or `/files` before.
+- `GatecoClientOptions.accessToken` / `refreshToken`, matching the Python client.
+- `client.dataCatalog.updateMetadata(resourceId, metadata)` for
+  `PATCH /api/v1/resources/{id}/metadata`.
+- `IngestionJobsResource` and `SourceConnectionsResource` are exported from the package root.
+
 ## [1.9.1] - 2026-09-01
 
 ### Added
