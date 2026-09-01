@@ -35,6 +35,10 @@ export interface GatecoClientOptions {
   baseUrl?: string;
   /** Optional static API key (mutually exclusive with login flow). */
   apiKey?: string;
+  /** Optional JWT access token from a previous login (same as the Python client). */
+  accessToken?: string;
+  /** Optional refresh token; enables automatic refresh when `accessToken` expires. */
+  refreshToken?: string;
   /** HTTP request timeout in milliseconds. */
   timeout?: number;
   /** Maximum automatic retries for 429 / 5xx responses. */
@@ -47,7 +51,7 @@ export interface GatecoClientOptions {
 export interface InternalRequestOptions {
   json?: Record<string, unknown>;
   params?: Record<string, string | number | boolean | undefined>;
-  authenticate?: boolean;
+  authenticate?: boolean;  formData?: FormData;
 }
 
 /**
@@ -101,6 +105,9 @@ export class GatecoClient {
       retryBackoffFactor: options.retryBackoffFactor,
     });
     this._tokenManager = new TokenManager({ apiKey: options.apiKey });
+    if (options.accessToken) {
+      this._tokenManager.setTokens(options.accessToken, options.refreshToken);
+    }
   }
 
   // ------------------------------------------------------------------
@@ -323,6 +330,7 @@ export class GatecoClient {
         json: options.json,
         params: options.params,
         headers,
+        formData: options.formData,
       });
     } catch (err) {
       if (err instanceof AuthenticationError && authenticate && this._tokenManager.getRefreshToken()) {
@@ -333,6 +341,7 @@ export class GatecoClient {
           json: options.json,
           params: options.params,
           headers: refreshedHeaders,
+        formData: options.formData,
         });
       }
       throw err;

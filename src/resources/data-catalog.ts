@@ -17,6 +17,14 @@ export interface UpdateGatedResourceOptions {
   encryptionMode?: string;
 }
 
+/** Fields accepted by `PATCH /api/v1/resources/{id}/metadata` (all optional, partial update). */
+export interface UpdateResourceMetadataOptions {
+  classification?: string;
+  sensitivity?: string;
+  domain?: string;
+  labels?: string[];
+}
+
 /** Namespace for data catalog endpoints. Accessed as `client.dataCatalog`. */
 export class DataCatalogResource {
   constructor(private readonly client: GatecoClient) {}
@@ -96,5 +104,25 @@ export class DataCatalogResource {
       json: body,
     });
     return parseGatedResource(data as Record<string, unknown>);
+  }
+
+  /**
+   * Update a registered resource's policy metadata via the ingestion-side
+   * endpoint (`PATCH /api/v1/resources/{id}/metadata`). Only the fields you
+   * pass are changed; the change takes effect on the next retrieval.
+   */
+  async updateMetadata(
+    resourceId: string,
+    metadata: UpdateResourceMetadataOptions,
+  ): Promise<GatedResource> {
+    const body: Record<string, unknown> = {};
+    if (metadata.classification !== undefined) body["classification"] = metadata.classification;
+    if (metadata.sensitivity !== undefined) body["sensitivity"] = metadata.sensitivity;
+    if (metadata.domain !== undefined) body["domain"] = metadata.domain;
+    if (metadata.labels !== undefined) body["labels"] = metadata.labels;
+    const data = await this.client._request("PATCH", `/api/v1/resources/${resourceId}/metadata`, {
+      json: body,
+    });
+    return parseGatedResource(data ?? {});
   }
 }
