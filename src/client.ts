@@ -104,7 +104,10 @@ export class GatecoClient {
       maxRetries: options.maxRetries,
       retryBackoffFactor: options.retryBackoffFactor,
     });
-    this._tokenManager = new TokenManager({ apiKey: options.apiKey });
+    // 0aa: fall back to GATECO_API_KEY from env, mirroring GATECO_BASE_URL above.
+    const envApiKey =
+      typeof process !== "undefined" ? process.env?.GATECO_API_KEY : undefined;
+    this._tokenManager = new TokenManager({ apiKey: options.apiKey ?? envApiKey });
     if (options.accessToken) {
       this._tokenManager.setTokens(options.accessToken, options.refreshToken);
     }

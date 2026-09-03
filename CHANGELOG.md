@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.1] - 2026-09-03
+
+### Fixed
+- `GatecoClient` now reads `GATECO_API_KEY` from `process.env` when no `apiKey` option is given,
+  mirroring the existing `GATECO_BASE_URL` handling. Before this the env var was ignored by the
+  SDK (only the Python CLI/MCP read it), so a client constructed with just the env var set sent no
+  credential. An explicit `apiKey` still takes precedence.
+
 ## [1.10.0] - 2026-09-01
 
 ### Added

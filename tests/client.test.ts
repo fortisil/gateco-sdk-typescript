@@ -38,6 +38,32 @@ describe("GatecoClient", () => {
     client.close();
   });
 
+  it("honours GATECO_API_KEY when no apiKey is given", () => {
+    const prev = process.env.GATECO_API_KEY;
+    process.env.GATECO_API_KEY = "gck_env_test";
+    try {
+      const client = new GatecoClient();
+      expect(client._tokenManager.getAuthHeaders()).toEqual({ "X-API-Key": "gck_env_test" });
+      client.close();
+    } finally {
+      if (prev === undefined) delete process.env.GATECO_API_KEY;
+      else process.env.GATECO_API_KEY = prev;
+    }
+  });
+
+  it("explicit apiKey overrides GATECO_API_KEY", () => {
+    const prev = process.env.GATECO_API_KEY;
+    process.env.GATECO_API_KEY = "gck_env";
+    try {
+      const client = new GatecoClient({ apiKey: "gck_explicit" });
+      expect(client._tokenManager.getAuthHeaders()).toEqual({ "X-API-Key": "gck_explicit" });
+      client.close();
+    } finally {
+      if (prev === undefined) delete process.env.GATECO_API_KEY;
+      else process.env.GATECO_API_KEY = prev;
+    }
+  });
+
   it("lazily initializes resource namespaces", () => {
     const client = new GatecoClient();
     // Access each namespace
