@@ -173,6 +173,28 @@ export class ConnectorsResource {
     return (data as Record<string, unknown>) ?? {};
   }
 
+  /**
+   * Declare the query-embedding profile for a connector (write-once). For a
+   * connector pointed at an existing corpus not ingested through Gateco, this makes
+   * server-side text-query embedding match the corpus's vector space.
+   * `openai_compatible` requires both `baseUrl` and `model`.
+   */
+  async setEmbeddingProfile(
+    connectorId: string,
+    options: { provider?: string; model?: string; dimensions?: number; baseUrl?: string } = {},
+  ): Promise<Record<string, unknown>> {
+    const body: Record<string, unknown> = { provider: options.provider ?? "openai" };
+    if (options.model !== undefined) body.model = options.model;
+    if (options.dimensions !== undefined) body.dimensions = options.dimensions;
+    if (options.baseUrl !== undefined) body.base_url = options.baseUrl;
+    const data = await this.client._request(
+      "PATCH",
+      `/api/connectors/${connectorId}/embedding-profile`,
+      { json: body },
+    );
+    return (data as Record<string, unknown>) ?? {};
+  }
+
   // ------------------------------------------------------------------
   // Coverage
   // ------------------------------------------------------------------

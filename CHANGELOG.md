@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.0] - 2026-09-04
+
+### Added
+- `client.connectors.setEmbeddingProfile(connectorId, { provider, model, dimensions, baseUrl })`:
+  declare the query-embedding profile for a connector pointed at an existing (not
+  Gateco-ingested) corpus, so server-side text-query embedding matches its vector space.
+  Write-once; `openai_compatible` requires `baseUrl` and `model`.
+
 ## [1.10.1] - 2026-09-03
 
 ### Fixed
