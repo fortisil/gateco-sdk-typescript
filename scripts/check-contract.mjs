@@ -74,6 +74,7 @@ const KNOWN_GAPS = {
   get_db_schema: "Search Config dialog helper; SDK method lands in plan Phase 5",
   get_preflight: "connector preflight is app-only until plan Phase 5",
   get_activation_stats: "dashboard activation card; app-only",
+  bulk_classify: "Data Catalog bulk classify; done in the app table (select rows / all), not the SDK",
   list_team_invites: "team invites are managed in the app", create_team_invite: "team invites are managed in the app",
   revoke_team_invite: "team invites are managed in the app",
   ingest_file: "TypeScript SDK has no multipart transport yet (plan Phase 5)",
