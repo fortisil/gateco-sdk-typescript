@@ -72,6 +72,7 @@ const KNOWN_GAPS = {
   update_pipeline: "pipelines are app-managed in v1",
   run_pipeline: "pipelines are app-managed in v1; scheduled by the worker",
   get_db_schema: "Search Config dialog helper; SDK method lands in plan Phase 5",
+  set_embedding_profile: "connector embedding profile is declared in the Search Config UI during setup; SDK method is a fast-follow",
   get_preflight: "connector preflight is app-only until plan Phase 5",
   get_activation_stats: "dashboard activation card; app-only",
   list_team_invites: "team invites are managed in the app", create_team_invite: "team invites are managed in the app",
