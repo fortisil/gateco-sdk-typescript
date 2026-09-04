@@ -138,6 +138,13 @@ export function parseFilterResult(data: Record<string, unknown>): FilterResult {
 
 /** Parse a raw JSON object into a SecuredRetrieval. */
 export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRetrieval {
+  // 0cc-b: the API reports counts as *_chunks and does not send the *_count
+  // aggregates, so derive them here instead of defaulting to 0.
+  const allowedChunks = (data["allowed_chunks"] as number) ?? 0;
+  const deniedChunks = (data["denied_chunks"] as number) ?? 0;
+  const parsedResults = Array.isArray(data["results"])
+    ? (data["results"] as Record<string, unknown>[]).map(parseFilterResult)
+    : undefined;
   return {
     id: (data["id"] ?? data["retrieval_id"]) as string,
     query: data["query"] as string | undefined,
@@ -145,9 +152,9 @@ export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRet
     connector_id: data["connector_id"] as string | undefined,
     organization_id: data["organization_id"] as string | undefined,
     status: data["status"] as string | undefined,
-    total_results: (data["total_results"] as number) ?? 0,
-    granted_count: (data["granted_count"] as number) ?? 0,
-    denied_count: (data["denied_count"] as number) ?? 0,
+    total_results: (data["total_results"] as number) || (parsedResults?.length ?? 0),
+    granted_count: (data["granted_count"] as number) || allowedChunks,
+    denied_count: (data["denied_count"] as number) || deniedChunks,
     outcomes: Array.isArray(data["outcomes"])
       ? (data["outcomes"] as Record<string, unknown>[]).map(parseRetrievalOutcome)
       : [],
@@ -159,9 +166,7 @@ export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRet
     matched_chunks: data["matched_chunks"] as number | undefined,
     allowed_chunks: data["allowed_chunks"] as number | undefined,
     denied_chunks: data["denied_chunks"] as number | undefined,
-    results: Array.isArray(data["results"])
-      ? (data["results"] as Record<string, unknown>[]).map(parseFilterResult)
-      : undefined,
+    results: parsedResults,
     denial_reasons: data["denial_reasons"] as string[] | undefined,
     policy_trace: Array.isArray(data["policy_trace"])
       ? (data["policy_trace"] as Record<string, unknown>[]).map(parsePolicyTrace)
