@@ -29,6 +29,7 @@ const RESOURCE_MAP = {
   "/api/scim": null,               // the IdP calls us
   "/api/benchmark": null,          // Performance Self-Test: in-app, login-gated by ruling (2026-08-31)
   "/api/capabilities": null,       // public capability matrix consumed by the app
+  "/api/help": null,               // Ask AI: console-only UI surface, not a customer API
   "/api/auth": ["auth", "auth.ts"],
   "/api/plans": ["billing", "billing.ts"], "/api/checkout": ["billing", "billing.ts"], "/api/billing": ["billing", "billing.ts"],
   "/api/connectors": ["connectors", "connectors.ts"],
