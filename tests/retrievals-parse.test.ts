@@ -36,3 +36,27 @@ describe("parseSecuredRetrieval", () => {
     expect(r.total_results).toBe(2);
   });
 });
+
+describe("parseSecuredRetrieval caller attribution (migrations 051/052)", () => {
+  it("surfaces who asserted the subject and whether it was verified", () => {
+    const r = parseSecuredRetrieval({
+      id: "r1",
+      principal_id: "alice",
+      actor_type: "api_key",
+      actor_name: "API key 'agent' (gck_ab12)",
+      actor_id: null,
+      api_key_id: "key-1",
+      subject_verified: true,
+    });
+    expect(r.actor_type).toBe("api_key");
+    expect(r.api_key_id).toBe("key-1");
+    expect(r.actor_id).toBeNull();
+    expect(r.subject_verified).toBe(true);
+  });
+
+  it("defaults subject_verified to false and actor fields to null on older records", () => {
+    const r = parseSecuredRetrieval({ id: "r0" });
+    expect(r.subject_verified).toBe(false);
+    expect(r.actor_type).toBeNull();
+  });
+});

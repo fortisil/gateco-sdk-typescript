@@ -32,6 +32,15 @@ export interface ExecuteRetrievalOptions {
   patternType?: "substring" | "regex";
   /** Case-sensitive grep matching. Only for grep mode. */
   caseSensitive?: boolean;
+  /**
+   * The end user's own identity token (from your login flow), sent as
+   * X-End-User-Token. Gateco verifies it against the issuing identity
+   * provider's JWKS and refuses the request (403 SUBJECT_MISMATCH) if it names
+   * a different principal than principalId. Required when the organization's
+   * subject_verification is "verified_token"; optional (but must verify if
+   * sent) under "none". See SecuredRetrieval.subject_verified.
+   */
+  endUserToken?: string;
 }
 
 /** Options for applying policy filtering to external retrieval candidates. */
@@ -44,6 +53,8 @@ export interface FilterRetrievalOptions {
   candidates: FilterCandidate[];
   /** Whether to include full policy evaluation trace. */
   includeTrace?: boolean;
+  /** The end user's identity token, sent as X-End-User-Token. See ExecuteRetrievalOptions. */
+  endUserToken?: string;
 }
 
 /** Filter options for listing retrievals. */
@@ -52,6 +63,11 @@ export interface ListRetrievalsFilters {
   principal_id?: string;
   status?: string;
   [key: string]: string | number | boolean | undefined;
+}
+
+/** The X-End-User-Token header, or undefined so no header is sent at all. */
+function subjectHeaders(endUserToken: string | undefined): Record<string, string> | undefined {
+  return endUserToken ? { "X-End-User-Token": endUserToken } : undefined;
 }
 
 /** Namespace for retrieval endpoints. Accessed as `client.retrievals`. */
@@ -76,6 +92,7 @@ export class RetrievalsResource {
 
     const data = await this.client._request("POST", "/api/retrievals/execute", {
       json: body,
+      headers: subjectHeaders(options.endUserToken),
     });
     return parseSecuredRetrieval(data as Record<string, unknown>);
   }
@@ -127,6 +144,7 @@ export class RetrievalsResource {
 
     const data = await this.client._request("POST", "/api/retrievals/filter", {
       json: body,
+      headers: subjectHeaders(options.endUserToken),
     });
     return parseSecuredRetrieval(data as Record<string, unknown>);
   }

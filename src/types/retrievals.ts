@@ -112,6 +112,13 @@ export interface SecuredRetrieval {
   pattern_type?: string;
   match_count?: number;
   sort_order?: string;
+  /** Who asserted the subject: "user" (console session) or "api_key" (machine credential). */
+  actor_type?: "user" | "api_key" | null;
+  actor_name?: string | null;
+  actor_id?: string | null;
+  api_key_id?: string | null;
+  /** True only when an X-End-User-Token was presented, verified, and named this principal. */
+  subject_verified: boolean;
 }
 
 /** Parse a raw JSON object into a FilterResult. */
@@ -178,6 +185,11 @@ export function parseSecuredRetrieval(data: Record<string, unknown>): SecuredRet
     pattern_type: data["pattern_type"] as string | undefined,
     match_count: data["match_count"] as number | undefined,
     sort_order: data["sort_order"] as string | undefined,
+    actor_type: (data["actor_type"] as "user" | "api_key" | null | undefined) ?? null,
+    actor_name: (data["actor_name"] as string | null | undefined) ?? null,
+    actor_id: (data["actor_id"] as string | null | undefined) ?? null,
+    api_key_id: (data["api_key_id"] as string | null | undefined) ?? null,
+    subject_verified: data["subject_verified"] === true,
   };
 }
 

@@ -22,6 +22,8 @@ export interface ExecuteAnswerOptions {
   searchMode?: "vector" | "keyword" | "hybrid";
   /** Hybrid weight: 1.0=all-vector, 0.0=all-keyword. Only for hybrid mode. */
   alpha?: number;
+  /** The end user's identity token, sent as X-End-User-Token. See client.retrievals.execute. */
+  endUserToken?: string;
 }
 
 /** Namespace for answer synthesis endpoints. Accessed as `client.answers`. */
@@ -42,6 +44,7 @@ export class AnswersResource {
 
     const data = await this.client._request("POST", "/api/answers/execute", {
       json: body,
+      headers: options.endUserToken ? { "X-End-User-Token": options.endUserToken } : undefined,
     });
     return parseAnswerResponse(data as Record<string, unknown>);
   }

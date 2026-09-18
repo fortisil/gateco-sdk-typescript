@@ -51,7 +51,10 @@ export interface GatecoClientOptions {
 export interface InternalRequestOptions {
   json?: Record<string, unknown>;
   params?: Record<string, string | number | boolean | undefined>;
-  authenticate?: boolean;  formData?: FormData;
+  authenticate?: boolean;
+  formData?: FormData;
+  /** Extra request headers (e.g. X-End-User-Token). Auth headers win on conflict. */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -318,7 +321,7 @@ export class GatecoClient {
     options: InternalRequestOptions = {},
   ): Promise<Record<string, unknown> | null> {
     const authenticate = options.authenticate !== false;
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { ...(options.headers ?? {}) };
 
     if (authenticate) {
       // Proactively refresh if token is near expiry.
@@ -339,7 +342,7 @@ export class GatecoClient {
       if (err instanceof AuthenticationError && authenticate && this._tokenManager.getRefreshToken()) {
         // Fallback refresh on 401: token may have been revoked server-side.
         await this._doRefresh();
-        const refreshedHeaders = this._tokenManager.getAuthHeaders();
+        const refreshedHeaders = { ...(options.headers ?? {}), ...this._tokenManager.getAuthHeaders() };
         return this._transport.request(method, path, {
           json: options.json,
           params: options.params,
