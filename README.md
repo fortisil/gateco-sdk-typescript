@@ -223,7 +223,7 @@ const policy = await client.policies.create({
     conditions: [{ field: "principal.groups", operator: "contains", value: "engineering" }],
     priority: 1,
   }],
-  resource_selectors: [{ field: "resource.classification", op: "lte", value: "internal" }],
+  resourceSelectors: [{ field: "resource.classification", op: "lte", value: "internal" }],
 });
 ```
 
