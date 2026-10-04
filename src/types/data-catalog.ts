@@ -2,10 +2,12 @@
  * Types for data catalog endpoints.
  */
 
+import type { Classification, Sensitivity } from "./labels.js";
+
 /** Filters for data catalog list queries. */
 export interface DataCatalogFilters {
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   domain?: string;
   label?: string;
   source_connector_id?: string;

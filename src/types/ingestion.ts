@@ -2,13 +2,15 @@
  * Types for ingestion endpoints.
  */
 
+import type { Classification, Sensitivity } from "./labels.js";
+
 /** Request body for `POST /api/v1/ingest`. */
 export interface IngestDocumentRequest {
   connector_id: string;
   external_resource_id: string;
   text: string;
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   domain?: string;
   labels?: string[];
   metadata?: Record<string, unknown>;

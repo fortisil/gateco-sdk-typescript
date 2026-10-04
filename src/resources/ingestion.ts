@@ -2,6 +2,7 @@
  * Ingestion resource -- document and batch ingestion.
  */
 
+import type { Classification, Sensitivity } from "../types/labels.js";
 import type { GatecoClient } from "../client.js";
 import { IngestionJobsResource } from "./ingestionJobs.js";
 import type { IngestDocumentResponse, BatchIngestResponse } from "../types/ingestion.js";
@@ -33,8 +34,8 @@ export interface EmbeddingOverride {
 
 /** Options for single document ingestion. */
 export interface IngestDocumentOptions {
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   domain?: string;
   labels?: string[];
   metadata?: Record<string, unknown>;
@@ -48,8 +49,8 @@ export interface IngestDocumentOptions {
 /** Options for `ingest.file()` (mirrors the Python SDK's form fields). */
 export interface IngestFileOptions {
   externalResourceId?: string;
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   domain?: string;
   labels?: string[];
   metadata?: Record<string, unknown>;
@@ -65,8 +66,8 @@ export interface FileUpload {
 /** Options for `ingest.files()` (applied to every file in the batch). */
 export interface IngestFilesOptions {
   domain?: string;
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   labels?: string[];
 }
 

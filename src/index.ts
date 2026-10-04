@@ -173,3 +173,7 @@ export type {
   ApiKey,
   CreateApiKeyResponse,
 } from "./types/index.js";
+
+// 1.13.0: label vocabularies (compile-time unions; the server already 422s anything else)
+export type { Classification, Sensitivity } from "./types/labels.js";
+export { CLASSIFICATIONS, SENSITIVITIES } from "./types/labels.js";

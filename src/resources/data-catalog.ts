@@ -2,6 +2,7 @@
  * Data catalog resource -- list, detail, update.
  */
 
+import type { Classification, Sensitivity } from "../types/labels.js";
 import type { GatecoClient } from "../client.js";
 import type { Page } from "../pagination.js";
 import { parsePage, listAll } from "../pagination.js";
@@ -10,8 +11,8 @@ import { parseGatedResource, parseGatedResourceDetail } from "../types/data-cata
 
 /** Options for updating a gated resource. */
 export interface UpdateGatedResourceOptions {
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   domain?: string;
   labels?: string[];
   encryptionMode?: string;
@@ -19,8 +20,8 @@ export interface UpdateGatedResourceOptions {
 
 /** Fields accepted by `PATCH /api/v1/resources/{id}/metadata` (all optional, partial update). */
 export interface UpdateResourceMetadataOptions {
-  classification?: string;
-  sensitivity?: string;
+  classification?: Classification;
+  sensitivity?: Sensitivity;
   domain?: string;
   labels?: string[];
 }

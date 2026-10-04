@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.13.0] - 2026-10-02
+
+### Added
+- `Classification` and `Sensitivity` union types and the `CLASSIFICATIONS` /
+  `SENSITIVITIES` constants. The `classification` / `sensitivity` fields of
+  `IngestDocumentRequest`, `IngestDocumentOptions`, `IngestFileOptions`,
+  `IngestFilesOptions`, `DataCatalogFilters`, `UpdateGatedResourceOptions`,
+  `UpdateResourceMetadataOptions` and the retroactive-registration options are typed with
+  them. **Compile-time only**: a non-vocabulary string was already refused by the server
+  with 422, so nothing changes at runtime; code that passed an arbitrary `string` variable
+  now needs a cast or the union type (cold run 2026-09-25, findings #10, #12, #13).
+  Response types (`GatedResource`, `IngestDocumentResponse`) keep `string`.
+
+### Changed
+- Version aligned with the Python SDK (1.13.0). The Python-only changes in this release
+  (stored-session fallback, CLI config verbs) have no TypeScript counterpart by design:
+  there is no session file for TypeScript.
+
 ## [1.12.0] - 2026-09-18
 
 ### Added

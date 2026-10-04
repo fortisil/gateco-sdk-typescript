@@ -11,6 +11,9 @@ import {
   // LLM credit errors
   LlmCreditExhaustedError,
   LlmKeyNotConfiguredError,
+  // 1.13.0 label vocabularies
+  CLASSIFICATIONS,
+  SENSITIVITIES,
 } from "../src/index.js";
 
 // Type-only imports — these must not be undefined at runtime for classes,
@@ -22,6 +25,8 @@ import type {
   ListPrincipalsOptions,
   ListGroupsOptions,
   PrincipalGroup,
+  Classification,
+  Sensitivity,
 } from "../src/index.js";
 
 describe("SDK root export completeness (Gap #6)", () => {
@@ -79,5 +84,13 @@ describe("SDK root export completeness (Gap #6)", () => {
     const group: PrincipalGroup = { id: "g1", member_count: 0 };
     expect(opts).toBeDefined();
     expect(group.member_count).toBe(0);
+  });
+
+  it("1.13.0: label vocabularies are exported and match the server enums", () => {
+    expect([...CLASSIFICATIONS]).toEqual(["public", "internal", "confidential", "restricted"]);
+    expect([...SENSITIVITIES]).toEqual(["low", "medium", "high", "critical"]);
+    const c: Classification = "internal";
+    const s: Sensitivity = "high";
+    expect([c, s]).toEqual(["internal", "high"]);
   });
 });

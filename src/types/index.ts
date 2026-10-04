@@ -172,3 +172,6 @@ export type {
   Relationship,
   CreateRelationshipRequest,
 } from "./relationships.js";
+
+export type { Classification, Sensitivity } from "./labels.js";
+export { CLASSIFICATIONS, SENSITIVITIES } from "./labels.js";

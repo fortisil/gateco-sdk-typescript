@@ -2,6 +2,7 @@
  * Retroactive registration resource -- register unmanaged vectors.
  */
 
+import type { Classification, Sensitivity } from "../types/labels.js";
 import type { GatecoClient } from "../client.js";
 import type { RetroactiveRegisterResponse } from "../types/retroactive.js";
 import { parseRetroactiveRegisterResponse } from "../types/retroactive.js";
@@ -10,8 +11,8 @@ import { parseRetroactiveRegisterResponse } from "../types/retroactive.js";
 export interface RetroactiveRegisterOptions {
   connectorId: string;
   scanLimit?: number;
-  defaultClassification?: string;
-  defaultSensitivity?: string;
+  defaultClassification?: Classification;
+  defaultSensitivity?: Sensitivity;
   defaultDomain?: string;
   defaultLabels?: string[];
   groupingStrategy?: string;

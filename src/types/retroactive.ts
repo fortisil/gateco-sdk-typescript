@@ -2,12 +2,14 @@
  * Types for retroactive registration endpoints.
  */
 
+import type { Classification, Sensitivity } from "./labels.js";
+
 /** Request body for `POST /api/v1/retroactive-register`. */
 export interface RetroactiveRegisterRequest {
   connector_id: string;
   scan_limit?: number;
-  default_classification?: string;
-  default_sensitivity?: string;
+  default_classification?: Classification;
+  default_sensitivity?: Sensitivity;
   default_domain?: string;
   default_labels?: string[];
   grouping_strategy?: string;
